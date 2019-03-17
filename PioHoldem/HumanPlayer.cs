@@ -13,9 +13,53 @@ namespace PioHoldem
 
         }
 
-        public override int GetAction()
+        public override int GetAction(Game game)
         {
-            return 0;
+            Console.WriteLine(name + "'s hole cards: |" + holeCards[0] + "|" + holeCards[1] + "|");
+
+            if (game.currentBetAmt == 0)
+            {
+                Console.WriteLine("Fold[1] Check[2] Bet[4]");
+            }
+            else if (game.currentBetAmt == inForOnCurrentStreet)
+            {
+                Console.WriteLine("Fold[1] Check[2] Raise[5]");
+            }
+            else if (game.currentBetAmt > inForOnCurrentStreet)
+            {
+                Console.WriteLine("Fold[1] Call[3] Raise[5]");
+            }
+
+            int input = int.Parse(Console.ReadLine());
+
+            if (input == 1)
+            {
+                return -1;
+            }
+            else if (input == 2)
+            {
+                return 0;
+            }
+            else if (input == 3)
+            {
+                return game.currentBetAmt - inForOnCurrentStreet;
+            }
+            else if (input == 4)
+            {
+                Console.WriteLine("Amount: ");
+                int amtInput = int.Parse(Console.ReadLine());
+                return amtInput;
+            }
+            else if (input == 5)
+            {
+                Console.WriteLine("Amount (total): ");
+                int amtInput = int.Parse(Console.ReadLine());
+                return amtInput - inForOnCurrentStreet;
+            }
+            else
+            {
+                return -1;
+            }
         }
     }
 }

@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace PioHoldem
 {
-    abstract class DecisionEngine
+    class FishAI : DecisionEngine
     {
-        public DecisionEngine()
+        public override int GetAction()
         {
-            
+            return 0;
         }
-
-        public abstract int GetAction();
     }
 }

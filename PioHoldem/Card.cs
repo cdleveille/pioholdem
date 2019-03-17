@@ -14,7 +14,7 @@ namespace PioHoldem
             this.value = value;
         }
 
-        override public string ToString()
+        public override string ToString()
         {
             try
             {

@@ -5,7 +5,7 @@ namespace PioHoldem
     class Deck
     {
         public Card[] cards;
-        private int topIndex;
+        public int topIndex;
         private Random rng;
 
         // Create a new Deck of 52 Cards
@@ -23,7 +23,7 @@ namespace PioHoldem
             rng = new Random();
         }
 
-        // Randomize the order of the Cards in the Deck
+        // Randomize the order of the cards and reset the topIndex
         public void Shuffle()
         {
             for (int reps = 0; reps < 100; reps++)
@@ -37,6 +37,7 @@ namespace PioHoldem
                     cards[j] = iCard;
                 }
             }
+            topIndex = 0;
         }
 
         // Deal one Card
@@ -63,7 +64,7 @@ namespace PioHoldem
             topIndex++;
         }
 
-        override public string ToString()
+        public override string ToString()
         {
             string toReturn = "";
             foreach (Card card in cards)

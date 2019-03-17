@@ -6,14 +6,15 @@ namespace PioHoldem
     {
         static void Main(string[] args)
         {
-            Deck deck = new Deck();
-            deck.Shuffle();
-            Console.WriteLine(deck.ToString());
+            Player p1 = new HumanPlayer("Chris", 200);
+            Player p2 = new HumanPlayer("Aaron", 200);
 
-            Player p1 = new HumanPlayer("Chris", 100000000);
-            Console.WriteLine(p1.ToString());
+            Player[] players = new Player[2];
+            players[0] = p1;
+            players[1] = p2;
 
-            Console.ReadLine();
+            Game game = new Game(players, 1, 2);
+            game.StartGame();
         }
     }
 }
