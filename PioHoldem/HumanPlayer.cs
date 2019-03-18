@@ -19,17 +19,17 @@ namespace PioHoldem
             int[] validActions;
             string options;
 
-            if (game.currentBetAmt == 0)
+            if (game.betAmt == 0)
             {
                 options = "Fold[1] Check[2] Bet[4]";
                 validActions = new int[] { 1, 2, 4 };
             }
-            else if (game.currentBetAmt == inForOnCurrentStreet)
+            else if (game.betAmt == inFor)
             {
                 options = "Fold[1] Check[2] Raise[5]";
                 validActions = new int[] { 1, 2, 5 };
             }
-            else// if (game.currentBetAmt > inForOnCurrentStreet)
+            else
             {
                 options = "Fold[1] Call[3] Raise[5]";
                 validActions = new int[] { 1, 3, 5 };
@@ -57,18 +57,18 @@ namespace PioHoldem
                     }
                     else if (input == 3)
                     {
-                        if (game.currentBetAmt - inForOnCurrentStreet >= stack)
+                        if (game.betAmt - inFor >= stack)
                         {
                             return stack;
                         }
                         else
                         {
-                            return game.currentBetAmt - inForOnCurrentStreet;
+                            return game.betAmt - inFor;
                         }
                     }
                     else if (input == 4)
                     {
-                        int amtInput = GetAmtInput(game.currentBetAmt);
+                        int amtInput = GetAmtInput(game.betAmt);
                         if (amtInput >= stack)
                         {
                             return stack;
@@ -80,14 +80,14 @@ namespace PioHoldem
                     }
                     else if (input == 5)
                     {
-                        int amtInput = GetAmtInput(game.currentBetAmt);
-                        if (amtInput - inForOnCurrentStreet >= stack)
+                        int amtInput = GetAmtInput(game.betAmt);
+                        if (amtInput - inFor >= stack)
                         {
                             return stack;
                         }
                         else
                         {
-                            return amtInput - inForOnCurrentStreet;
+                            return amtInput - inFor;
                         }
                     }
                     else
@@ -107,16 +107,16 @@ namespace PioHoldem
             }
         }
 
-        private int GetAmtInput(int currentBetAmt)
+        private int GetAmtInput(int betAmt)
         {
             try
             {
                 Console.WriteLine("Amount: ");
                 int amtInput = int.Parse(Console.ReadLine());
-                if (amtInput < (2 * currentBetAmt))
+                if (amtInput < (2 * betAmt))
                 {
                     Console.WriteLine("Raise must be at least 2x the bet amount!");
-                    return GetAmtInput(currentBetAmt);
+                    return GetAmtInput(betAmt);
                 }
                 else
                 {
@@ -133,7 +133,7 @@ namespace PioHoldem
                 else
                 {
                     Console.WriteLine("Invalid input!");
-                    return GetAmtInput(currentBetAmt);
+                    return GetAmtInput(betAmt);
                 }
             }
         }

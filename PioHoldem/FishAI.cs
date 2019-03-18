@@ -10,12 +10,12 @@ namespace PioHoldem
     {
         public override int GetAction(Game game)
         {
-            if (game.currentBetAmt == 0)
+            if (game.betAmt == 0)
             {
                 // Fold[1] Check[2] Bet[4]
                 rng.Next();
             }
-            else if (game.currentBetAmt == game.players[game.toActIndex].inForOnCurrentStreet)
+            else if (game.betAmt == game.players[game.actingIndex].inFor)
             {
                 // Fold[1] Check[2] Raise[5]
             }

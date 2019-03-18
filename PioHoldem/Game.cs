@@ -8,10 +8,10 @@ namespace PioHoldem
 {
     class Game
     {
-        public int pot, sbAmt, bbAmt, currentBetAmt, btnIndex, sbIndex, bbIndex, toActIndex;
+        public int pot, sbAmt, bbAmt, betAmt, btnIndex, sbIndex, bbIndex, actingIndex;
         public Player[] players;
-        public Deck deck;
         public Card[] board;
+        private Deck deck;
         private Random rng;
 
         public Game(Player[] players, int sbAmt, int bbAmt)
@@ -32,7 +32,7 @@ namespace PioHoldem
         }
 
         // Main flow of the game
-        public void GameLoop()
+        private void GameLoop()
         {
             bool gameOver = false;
             while (!gameOver)
@@ -94,11 +94,12 @@ namespace PioHoldem
                     EndHand();
                 }
 
-                // 
+                // Exit game loop if a player busted
                 if (PlayerBusted())
                 {
                     gameOver = true;
                 }
+                // Otherwise, continue the game
                 else
                 {
                     Console.WriteLine("Press ENTER to begin next hand...");
@@ -127,33 +128,33 @@ namespace PioHoldem
             if (players[sbIndex].stack > sbAmt)
             {
                 pot += sbAmt;
-                players[sbIndex].inForOnCurrentStreet += sbAmt;
+                players[sbIndex].inFor += sbAmt;
                 Console.WriteLine(players[sbIndex].name + " posts the small blind of " + sbAmt);
-                players[sbIndex].decStack(sbAmt);
+                players[sbIndex].stack -= sbAmt;
             }
             else
             {
                 pot += players[sbIndex].stack;
-                players[sbIndex].inForOnCurrentStreet += players[sbIndex].stack;
+                players[sbIndex].inFor += players[sbIndex].stack;
                 Console.WriteLine(players[sbIndex].name + " posts the small blind of " + players[sbIndex].stack + " (ALL IN)");
-                players[sbIndex].decStack(sbAmt);
+                players[sbIndex].stack = 0;
             }
 
             if (players[bbIndex].stack > bbAmt)
             {
                 pot += bbAmt;
-                players[bbIndex].inForOnCurrentStreet += bbAmt;
-                currentBetAmt = bbAmt;
+                players[bbIndex].inFor += bbAmt;
+                betAmt = bbAmt;
                 Console.WriteLine(players[bbIndex].name + " posts the big blind of " + bbAmt);
-                players[bbIndex].decStack(bbAmt);
+                players[bbIndex].stack -= bbAmt;
             }
             else
             {
                 pot += players[bbIndex].stack;
-                players[bbIndex].inForOnCurrentStreet += players[bbIndex].stack;
-                currentBetAmt = players[bbIndex].stack;
+                players[bbIndex].inFor += players[bbIndex].stack;
+                betAmt = players[bbIndex].stack;
                 Console.WriteLine(players[bbIndex].name + " posts the big blind of " + players[bbIndex].stack + " (ALL IN)");
-                players[bbIndex].decStack(bbAmt);
+                players[bbIndex].stack = 0;
             }
         }
 
@@ -164,7 +165,7 @@ namespace PioHoldem
             {
                 player.holeCards = deck.Deal(2);
                 player.folded = false;
-                player.inForOnCurrentStreet = 0;
+                player.inFor = 0;
             }
         }
 
@@ -173,32 +174,27 @@ namespace PioHoldem
         private bool BettingRound(int toActFirstIndex)
         {
             bool settled = false;
-            toActIndex = toActFirstIndex;
+            actingIndex = toActFirstIndex;
             int toActLastIndex = GetToActLastIndex(toActFirstIndex);
 
             while (!settled)
             {
                 // Get an action from the current player if they have not folded and are not all in
-                if (!players[toActIndex].folded && players[toActIndex].stack > 0)
+                if (!players[actingIndex].folded && players[actingIndex].stack > 0)
                 {
                     PrintPlayers();
-                    Console.WriteLine("Pot:" + pot + " Bet:" + currentBetAmt + " InFor:" + players[toActIndex].inForOnCurrentStreet + " ToCall:" + (currentBetAmt - players[toActIndex].inForOnCurrentStreet));
+                    Console.WriteLine("Pot:" + pot + " Bet:" + betAmt + " InFor:" + players[actingIndex].inFor + " ToCall:" + (betAmt - players[actingIndex].inFor));
 
-                    settled = ProcessPlayerAction(players[toActIndex].GetAction(this), toActLastIndex);
+                    settled = ProcessPlayerAction(players[actingIndex].GetAction(this), toActLastIndex);
                 }
 
                 // Count the number of players that have not folded
                 int playersRemaining = 0;
-                int playersAllIn = 0;
                 foreach (Player player in players)
                 {
                     if (!player.folded)
                     {
                         playersRemaining++;
-                    }
-                    if (player.stack == 0)
-                    {
-                        playersAllIn++;
                     }
                 }
                 // If all but one player have folded, end the hand
@@ -208,7 +204,7 @@ namespace PioHoldem
                 }
 
                 // Get the next player to act
-                toActIndex = GetNextPosition(toActIndex);
+                actingIndex = GetNextPosition(actingIndex);
             }
             return false;
         }
@@ -220,18 +216,20 @@ namespace PioHoldem
             // Negative value: the player folded
             if (playerAction < 0)
             {
-                Console.WriteLine(players[toActIndex].name + " folds");
-                players[toActIndex].folded = true;
+                Console.WriteLine(players[actingIndex].name + " folds");
+                players[actingIndex].folded = true;
             }
-            // If the big blind checks the option, close the action
+            // Value of 0: the player checked
             else if (playerAction == 0)
             {
-                Console.WriteLine(players[toActIndex].name + " checks");
-                if (toActIndex == bbIndex && currentBetAmt == bbAmt)
+                Console.WriteLine(players[actingIndex].name + " checks");
+                // Close the action if the big blind checks the option
+                if (actingIndex == bbIndex && betAmt == bbAmt)
                 {
                     return true;
                 }
-                else if (currentBetAmt == 0 && toActIndex != toActLastIndex)
+                // Leave the action open if there is no bet and not all players have acted yet
+                else if (betAmt == 0 && actingIndex != toActLastIndex)
                 {
                     return false;
                 }
@@ -239,53 +237,53 @@ namespace PioHoldem
             // Positive value: the player put chips in the pot (call/bet/raise)
             else if (playerAction > 0)
             {
-                if (currentBetAmt > 0 && playerAction + players[toActIndex].inForOnCurrentStreet <= currentBetAmt)
+                if (betAmt > 0 && playerAction + players[actingIndex].inFor <= betAmt)
                 {
-                    Console.Write(players[toActIndex].name + " calls " + (playerAction + players[toActIndex].inForOnCurrentStreet));
+                    Console.Write(players[actingIndex].name + " calls " + (playerAction + players[actingIndex].inFor));
                 }
-                else if (currentBetAmt == 0)
+                else if (betAmt == 0)
                 {
-                    Console.Write(players[toActIndex].name + " bets " + playerAction);
+                    Console.Write(players[actingIndex].name + " bets " + playerAction);
                 }
                 else
                 {
-                    Console.Write(players[toActIndex].name + " raises to " + (playerAction + players[toActIndex].inForOnCurrentStreet));
+                    Console.Write(players[actingIndex].name + " raises to " + (playerAction + players[actingIndex].inFor));
                 }
                 
-                Console.WriteLine(playerAction >= players[toActIndex].stack ? " (ALL IN)" : "");
+                Console.WriteLine(playerAction >= players[actingIndex].stack ? " (ALL IN)" : "");
 
                 // If a player calls all in for less than the bet amount, return the difference to the other player
                 // *** ONLY WORKS FOR HEADS-UP ***
-                if (playerAction + players[toActIndex].inForOnCurrentStreet < currentBetAmt)
+                if (playerAction + players[actingIndex].inFor < betAmt)
                 {
-                    int diff = currentBetAmt - (playerAction + players[toActIndex].inForOnCurrentStreet);
-                    Console.WriteLine("Returning difference of " + diff + " to " + players[GetNextPosition(toActIndex)].name);
+                    int diff = betAmt - (playerAction + players[actingIndex].inFor);
+                    Console.WriteLine("Returning difference of " + diff + " to " + players[GetNextPosition(actingIndex)].name);
                     pot -= diff;
-                    players[GetNextPosition(toActIndex)].stack += diff;
-                    players[GetNextPosition(toActIndex)].inForOnCurrentStreet -= diff;
-                    currentBetAmt -= diff;
+                    players[GetNextPosition(actingIndex)].stack += diff;
+                    players[GetNextPosition(actingIndex)].inFor -= diff;
+                    betAmt -= diff;
                 }
                 
-                players[toActIndex].inForOnCurrentStreet += playerAction;
-                players[toActIndex].stack -= playerAction;
-                currentBetAmt = players[toActIndex].inForOnCurrentStreet;
+                players[actingIndex].inFor += playerAction;
+                players[actingIndex].stack -= playerAction;
+                betAmt = players[actingIndex].inFor;
                 pot += playerAction;
             }
 
             // Close the action on this street unless...
             bool toReturn = true;
 
-            // ...at least one player that has not folded has not matched the currentBetAmt
+            // ...at least one player that has not folded has not matched the betAmt
             foreach (Player player in players)
             {
-                if (!player.folded && player.inForOnCurrentStreet != currentBetAmt)
+                if (!player.folded && player.inFor != betAmt)
                 {
                     toReturn = false;
                 }
             }
 
             // ...the player in the big blind is next to act and no player has raised
-            if (bbIndex == GetNextPosition(toActIndex) && currentBetAmt == bbAmt)
+            if (bbIndex == GetNextPosition(actingIndex) && betAmt == bbAmt)
             {
                 toReturn = false;
             }
@@ -293,6 +291,7 @@ namespace PioHoldem
             return toReturn;
         }
 
+        // Print a list of each player and their stack size
         private void PrintPlayers()
         {
             foreach (Player player in players)
@@ -345,7 +344,7 @@ namespace PioHoldem
             btnIndex = GetNextPosition(btnIndex);
         }
 
-        // Reveal hole cards of players who have not folded and award the pot to the winner
+        // Reveal hole cards of remaining players and award the pot to the winner
         private void Showdown()
         {
             Console.WriteLine("Showdown!");
@@ -365,13 +364,13 @@ namespace PioHoldem
             btnIndex = GetNextPosition(btnIndex);
         }
 
-        // Set inForOnCurrentStreet to 0 for all players
+        // Set inFor to 0 for all players
         private void ClearInFor()
         {
-            currentBetAmt = 0;
+            betAmt = 0;
             foreach (Player player in players)
             {
-                player.inForOnCurrentStreet = 0;
+                player.inFor = 0;
             }
         }
         

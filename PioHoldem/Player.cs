@@ -8,11 +8,10 @@ namespace PioHoldem
 {
     abstract class Player
     {
-        public int stack;
         public string name;
-        public Card[] holeCards;
+        public int stack, inFor;
         public bool folded;
-        public int inForOnCurrentStreet;
+        public Card[] holeCards;
 
         // Create a new Player with the specified name and starting stack amount
         public Player(string name, int startingStack)
@@ -24,25 +23,6 @@ namespace PioHoldem
 
         // Get the Player's action
         public abstract int GetAction(Game game);
-
-        // Increase stack by specified amount
-        public void incStack(int amount)
-        {
-            stack += amount;
-        }
-
-        // Decrease stack by specified amount
-        public void decStack(int amount)
-        {
-            if (stack >= amount)
-            {
-                stack -= amount;
-            }
-            else
-            {
-                stack = 0;
-            }
-        }
 
         public override string ToString()
         {

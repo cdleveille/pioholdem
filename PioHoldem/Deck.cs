@@ -28,9 +28,9 @@ namespace PioHoldem
         {
             for (int reps = 0; reps < 100; reps++)
             {
-                for (int i = 0; i < 52; i++)
+                for (int i = 0; i < cards.Length; i++)
                 {
-                    int j = rng.Next(52);
+                    int j = rng.Next(cards.Length);
                     Card iCard = cards[i];
                     Card jCard = cards[j];
                     cards[i] = jCard;
