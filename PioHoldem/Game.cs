@@ -13,12 +13,14 @@ namespace PioHoldem
         public Card[] board;
         private Deck deck;
         private Random rng;
+        private ShowdownEvaluator eval;
 
         public Game(Player[] players, int sbAmt, int bbAmt)
         {
             this.players = players;
             deck = new Deck();
             rng = new Random();
+            eval = new ShowdownEvaluator();
             this.sbAmt = sbAmt;
             this.bbAmt = bbAmt;
             board = new Card[5];
@@ -348,19 +350,31 @@ namespace PioHoldem
         private void Showdown()
         {
             Console.WriteLine("Showdown!");
+            Console.Write("Board: ");
+            PrintBoard();
+            int showdownCount = 0;
             foreach (Player player in players)
             {
                 if (!player.folded)
                 {
-                    Console.WriteLine(player.name + " shows |" + player.holeCards[0] + "|" + player.holeCards[1] + "|");
+                    showdownCount++;
+                }
+            }
+            Player[] showdownPlayers = new Player[showdownCount];
+
+            int trackerIndex = 0;
+            foreach (Player player in players)
+            {
+                if (!player.folded)
+                {
+                    showdownPlayers[trackerIndex] = player;
+                    trackerIndex++;
                 }
             }
 
-            Console.WriteLine("HandEvaluator not yet implemented! Assigning random winner...");
-
-            int winner = rng.Next(players.Length);
-            Console.WriteLine(players[winner].name + " wins pot of " + pot);
-            players[winner].stack += pot;
+            int winnerIndex = eval.EvaluateHands(showdownPlayers, board);
+            Console.WriteLine(players[winnerIndex].name + " wins pot of " + pot);
+            players[winnerIndex].stack += pot;
             btnIndex = GetNextPosition(btnIndex);
         }
 
