@@ -17,7 +17,7 @@ namespace PioHoldem
 
         public override int GetAction(Game game)
         {
-            return decisionEngine.GetAction();
+            return decisionEngine.GetAction(game);
         }
     }
 }

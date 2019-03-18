@@ -4,8 +4,8 @@ namespace PioHoldem
 {
     class Deck
     {
-        public Card[] cards;
-        public int topIndex;
+        private Card[] cards;
+        private int topIndex;
         private Random rng;
 
         // Create a new Deck of 52 Cards
@@ -69,7 +69,7 @@ namespace PioHoldem
             string toReturn = "";
             foreach (Card card in cards)
             {
-                toReturn += "|" + card.ToString();
+                toReturn += "|" + card;
             }
             return toReturn + "|";
         }

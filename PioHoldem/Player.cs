@@ -46,7 +46,7 @@ namespace PioHoldem
 
         public override string ToString()
         {
-            return name + "(" + stack + ")";
+            return name + "(" + (stack == 0 ? "ALL IN" : stack.ToString()) + ")";
         }
     }
 }

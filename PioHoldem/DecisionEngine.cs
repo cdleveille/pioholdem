@@ -8,11 +8,13 @@ namespace PioHoldem
 {
     abstract class DecisionEngine
     {
+        public static Random rng;
+
         public DecisionEngine()
         {
-            
+            rng = new Random();
         }
 
-        public abstract int GetAction();
+        public abstract int GetAction(Game game);
     }
 }
