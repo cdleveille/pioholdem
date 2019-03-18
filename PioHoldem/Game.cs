@@ -302,20 +302,6 @@ namespace PioHoldem
             Console.WriteLine();
         }
 
-        // Award to the pot to the only remaining player if all others have folded
-        private void EndHand()
-        {
-            for (int i = 0; i < players.Length; i++)
-            {
-                if (players[i].folded == false)
-                {
-                    Console.WriteLine(players[i].name + " wins pot of " + pot);
-                    players[i].stack += pot;
-                }
-            }
-            btnIndex = GetNextPosition(btnIndex);
-        }
-
         // Deal the Flop
         private void Flop()
         {
@@ -343,6 +329,20 @@ namespace PioHoldem
             board[4] = deck.Deal();
             Console.Write("River: ");
             PrintBoard();
+        }
+
+        // Award to the pot to the only remaining player if all others have folded
+        private void EndHand()
+        {
+            for (int i = 0; i < players.Length; i++)
+            {
+                if (players[i].folded == false)
+                {
+                    Console.WriteLine(players[i].name + " wins pot of " + pot);
+                    players[i].stack += pot;
+                }
+            }
+            btnIndex = GetNextPosition(btnIndex);
         }
 
         // Reveal hole cards of players who have not folded and award the pot to the winner
@@ -464,9 +464,26 @@ namespace PioHoldem
         }
 
         // End the game and announce the winner
+        // *** ONLY WORKS FOR HEADS-UP ***
         private void GameOver()
         {
+            foreach (Player player in players)
+            {
+                if (player.stack == 0)
+                {
+                    Console.WriteLine(player.name + " busted");
+                }
+            }
+            foreach (Player player in players)
+            {
+                if (player.stack > 0)
+                {
+                    Console.WriteLine(player.name + " wins!");
+                }
+            }
 
+            Console.WriteLine("Press ENTER to end game...");
+            Console.ReadLine();
         }
     }
 }

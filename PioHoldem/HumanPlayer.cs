@@ -100,7 +100,7 @@ namespace PioHoldem
                     throw new Exception();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Console.WriteLine("Invalid input!");
                 return GetInput(game, validActions, options);
