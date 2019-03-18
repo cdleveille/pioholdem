@@ -210,7 +210,7 @@ namespace PioHoldem
                 foreach (Card card2 in hand)
                 {
                     // Excluding the current card itself, count the cards in the hand that have the same suit
-                    if (card.value != card2.suit && card.suit == card2.suit)
+                    if (card.value != card2.value && card.suit == card2.suit)
                     {
                         count++;
                         if (count == 4)
