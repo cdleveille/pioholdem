@@ -109,6 +109,7 @@ namespace PioHoldem
             if (count > 1)
             {
                 //return TieBreaker(int rank, Player[] players, Card[] board);
+                Console.WriteLine("Tie! Same hand rank! Awarding pot randomly (Tiebreaker not yet implemented)");
                 return 0;
             }
             // Otherwise, return the index of the player with the highest ranking hand

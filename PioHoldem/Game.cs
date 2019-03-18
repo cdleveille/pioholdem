@@ -211,7 +211,7 @@ namespace PioHoldem
             return false;
         }
 
-        // Receive the action of the player to act and update necessary game objects
+        // Receive the action of the player to act and update applicable amounts
         // Return true if action is settled on this street for all players, false if not
         private bool ProcessPlayerAction(int playerAction, int toActLastIndex)
         {
@@ -241,7 +241,10 @@ namespace PioHoldem
             {
                 if (betAmt > 0 && playerAction + players[actingIndex].inFor <= betAmt)
                 {
-                    Console.Write(players[actingIndex].name + " calls " + (playerAction + players[actingIndex].inFor));
+                    string toPrint = players[actingIndex].name + " calls " + playerAction;
+                    if (playerAction < betAmt)
+                        toPrint += " (" + (playerAction + players[actingIndex].inFor) + " total)";
+                    Console.Write(toPrint);
                 }
                 else if (betAmt == 0)
                 {
@@ -266,10 +269,11 @@ namespace PioHoldem
                     betAmt -= diff;
                 }
                 
-                players[actingIndex].inFor += playerAction;
-                players[actingIndex].stack -= playerAction;
-                betAmt = players[actingIndex].inFor;
+                // Update applicable amounts
                 pot += playerAction;
+                players[actingIndex].stack -= playerAction;
+                players[actingIndex].inFor += playerAction;
+                betAmt = players[actingIndex].inFor;
             }
 
             // Close the action on this street unless...
