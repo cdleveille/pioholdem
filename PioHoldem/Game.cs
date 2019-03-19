@@ -33,7 +33,7 @@ namespace PioHoldem
             GameLoop();
         }
 
-        // Main flow of the game
+        // Main game flow
         private void GameLoop()
         {
             bool gameOver = false;
@@ -55,7 +55,6 @@ namespace PioHoldem
                 if (!allButOneFolded)
                 {
                     Flop();
-                    ClearInFor();
                     if (!AllInSkipToShowdown())
                     {
                         allButOneFolded = BettingRound(GetNextPosition(btnIndex));
@@ -63,7 +62,6 @@ namespace PioHoldem
                     if (!allButOneFolded)
                     {
                         Turn();
-                        ClearInFor();
                         if (!AllInSkipToShowdown())
                         {
                             allButOneFolded = BettingRound(GetNextPosition(btnIndex));
@@ -71,7 +69,6 @@ namespace PioHoldem
                         if (!allButOneFolded)
                         {
                             River();
-                            ClearInFor();
                             if (!AllInSkipToShowdown())
                             {
                                 allButOneFolded = BettingRound(GetNextPosition(btnIndex));
@@ -316,6 +313,7 @@ namespace PioHoldem
             board[2] = deck.Deal();
             Console.Write("Flop:  ");
             PrintBoard();
+            ClearInFor();
         }
 
         // Deal the Turn
@@ -325,6 +323,7 @@ namespace PioHoldem
             board[3] = deck.Deal();
             Console.Write("Turn:  ");
             PrintBoard();
+            ClearInFor();
         }
 
         // Deal the River
@@ -334,6 +333,7 @@ namespace PioHoldem
             board[4] = deck.Deal();
             Console.Write("River: ");
             PrintBoard();
+            ClearInFor();
         }
 
         // Award to the pot to the only remaining player if all others have folded
