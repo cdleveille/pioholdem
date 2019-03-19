@@ -73,9 +73,14 @@ namespace PioHoldem
                             {
                                 allButOneFolded = BettingRound(GetNextPosition(btnIndex));
                             }
+
                             if (!allButOneFolded)
                             {
                                 Showdown();
+                            }
+                            else
+                            {
+                                EndHand();
                             }
                         }
                         else
@@ -420,6 +425,12 @@ namespace PioHoldem
                 }
             }
             Console.WriteLine("|");
+        }
+
+        private void PrintStacksAndPot()
+        {
+            PrintPlayers();
+            Console.WriteLine("Pot:" + pot);
         }
 
         // Reset the community cards

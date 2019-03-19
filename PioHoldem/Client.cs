@@ -7,8 +7,8 @@ namespace PioHoldem
         static void Main(string[] args)
         {
             Player p1 = new HumanPlayer("Chris", 1000);
-            Player p2 = new HumanPlayer("Aaron", 1000);
-            //Player p2 = new BotPlayer("Bill", 1000);
+            //Player p2 = new HumanPlayer("Aaron", 1000);
+            Player p2 = new BotPlayer("FishAI", 1000);
 
             Player[] players = new Player[2];
             players[0] = p1;
