@@ -68,7 +68,7 @@ namespace PioHoldem
                     }
                     else if (input == 4)
                     {
-                        int amtInput = GetAmtInput(game.betAmt);
+                        int amtInput = GetAmtInput(game.betAmt, game.bbAmt, "Bet amount:");
                         if (amtInput >= stack)
                         {
                             return stack;
@@ -80,7 +80,7 @@ namespace PioHoldem
                     }
                     else if (input == 5)
                     {
-                        int amtInput = GetAmtInput(game.betAmt);
+                        int amtInput = GetAmtInput(game.betAmt, game.bbAmt, "Raise to amount:");
                         if (amtInput - inFor >= stack)
                         {
                             return stack;
@@ -107,16 +107,21 @@ namespace PioHoldem
             }
         }
 
-        private int GetAmtInput(int betAmt)
+        private int GetAmtInput(int betAmt, int minBet, string prompt)
         {
             try
             {
-                Console.WriteLine("Amount: ");
+                Console.WriteLine(prompt);
                 int amtInput = int.Parse(Console.ReadLine());
-                if (amtInput < (2 * betAmt))
+                if (betAmt > 0 && amtInput < (2 * betAmt))
                 {
-                    Console.WriteLine("Raise must be at least 2x the bet amount!");
-                    return GetAmtInput(betAmt);
+                    Console.WriteLine("Invalid raise! Minimum amount is " + (2 * betAmt));
+                    return GetAmtInput(betAmt, minBet, prompt);
+                }
+                else if (betAmt == 0 && amtInput < minBet)
+                {
+                    Console.WriteLine("Invalid bet! Minimum amount is " + minBet);
+                    return GetAmtInput(betAmt, minBet, prompt);
                 }
                 else
                 {
@@ -133,7 +138,7 @@ namespace PioHoldem
                 else
                 {
                     Console.WriteLine("Invalid input!");
-                    return GetAmtInput(betAmt);
+                    return GetAmtInput(betAmt, minBet, prompt);
                 }
             }
         }
