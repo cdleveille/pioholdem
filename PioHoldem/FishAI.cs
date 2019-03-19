@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PioHoldem
@@ -10,6 +11,8 @@ namespace PioHoldem
     {
         public override int GetAction(Game game)
         {
+            Thread.Sleep(1000);
+
             int action;
             if (game.betAmt == 0)
             {

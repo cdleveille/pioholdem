@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PioHoldem
@@ -13,14 +14,14 @@ namespace PioHoldem
         public Card[] board;
         private Deck deck;
         private Random rng;
-        private ShowdownEvaluator eval;
+        private HandEvaluator eval;
 
         public Game(Player[] players, int sbAmt, int bbAmt)
         {
             this.players = players;
             deck = new Deck();
             rng = new Random();
-            eval = new ShowdownEvaluator();
+            eval = new HandEvaluator();
             this.sbAmt = sbAmt;
             this.bbAmt = bbAmt;
             board = new Card[5];
@@ -186,23 +187,20 @@ namespace PioHoldem
                 // Get an action from the current player if they have not folded and are not all in
                 if (!players[actingIndex].folded && players[actingIndex].stack > 0)
                 {
+                    // Print player stacks and other relevant amounts
                     PrintPlayers();
                     Console.WriteLine("Pot:" + pot + " Bet:" + betAmt + " InFor:" + players[actingIndex].inFor + " ToCall:" + (betAmt - players[actingIndex].inFor));
 
-                    settled = ProcessPlayerAction(players[actingIndex].GetAction(this), toActLastIndex);
-                }
+                    // Get an action from the acting player
+                    int playerAction = players[actingIndex].GetAction(this);
 
-                // Count the number of players that have not folded
-                int playersRemaining = 0;
-                foreach (Player player in players)
-                {
-                    if (!player.folded)
-                    {
-                        playersRemaining++;
-                    }
+                    // Based on the player's action, update applicable amounts
+                    // and determine if the action on this street is settled
+                    settled = ProcessPlayerAction(playerAction, toActLastIndex);
                 }
+                
                 // If all but one player have folded, end the hand
-                if (playersRemaining == 1)
+                if (CountNotFolded() == 1)
                 {
                     return true;
                 }
@@ -220,13 +218,17 @@ namespace PioHoldem
             // Negative value: the player folded
             if (playerAction < 0)
             {
+                Console.WriteLine();
                 Console.WriteLine(players[actingIndex].name + " folds");
+                Console.WriteLine();
                 players[actingIndex].folded = true;
             }
             // Value of 0: the player checked
             else if (playerAction == 0)
             {
+                Console.WriteLine();
                 Console.WriteLine(players[actingIndex].name + " checks");
+                Console.WriteLine();
                 // Close the action if the big blind checks the option
                 if (actingIndex == bbIndex && betAmt == bbAmt)
                 {
@@ -246,18 +248,22 @@ namespace PioHoldem
                     string toPrint = players[actingIndex].name + " calls " + playerAction;
                     if (playerAction < betAmt)
                         toPrint += " (" + (playerAction + players[actingIndex].inFor) + " total)";
+                    Console.WriteLine();
                     Console.Write(toPrint);
                 }
                 else if (betAmt == 0)
                 {
+                    Console.WriteLine();
                     Console.Write(players[actingIndex].name + " bets " + playerAction);
                 }
                 else
                 {
+                    Console.WriteLine();
                     Console.Write(players[actingIndex].name + " raises to " + (playerAction + players[actingIndex].inFor));
                 }
                 
-                Console.WriteLine(playerAction >= players[actingIndex].stack ? " (ALL IN)" : "");
+                Console.WriteLine(playerAction >= players[actingIndex].stack ? " *ALL IN*" : "");
+                Console.WriteLine();
 
                 // If a player calls all in for less than the bet amount, return the difference to the other player
                 // *** ONLY WORKS FOR HEADS-UP ***
@@ -318,7 +324,9 @@ namespace PioHoldem
             board[2] = deck.Deal();
             Console.Write("Flop:  ");
             PrintBoard();
+            Console.WriteLine();
             ClearInFor();
+            Thread.Sleep(1000);
         }
 
         // Deal the Turn
@@ -328,7 +336,9 @@ namespace PioHoldem
             board[3] = deck.Deal();
             Console.Write("Turn:  ");
             PrintBoard();
+            Console.WriteLine();
             ClearInFor();
+            Thread.Sleep(1000);
         }
 
         // Deal the River
@@ -338,7 +348,9 @@ namespace PioHoldem
             board[4] = deck.Deal();
             Console.Write("River: ");
             PrintBoard();
+            Console.WriteLine();
             ClearInFor();
+            Thread.Sleep(1000);
         }
 
         // Award to the pot to the only remaining player if all others have folded
@@ -361,14 +373,7 @@ namespace PioHoldem
             Console.WriteLine("Showdown!");
             Console.Write("Board: ");
             PrintBoard();
-            int showdownCount = 0;
-            foreach (Player player in players)
-            {
-                if (!player.folded)
-                {
-                    showdownCount++;
-                }
-            }
+            int showdownCount = CountNotFolded();
             Player[] showdownPlayers = new Player[showdownCount];
 
             int trackerIndex = 0;
@@ -382,8 +387,29 @@ namespace PioHoldem
             }
 
             int winnerIndex = eval.EvaluateHands(showdownPlayers, board);
-            Console.WriteLine(players[winnerIndex].name + " wins pot of " + pot);
-            players[winnerIndex].stack += pot;
+            if (winnerIndex < 0)
+            {
+                Console.WriteLine("Chop pot!");
+                int chopAmt = pot / showdownCount;
+                int remainder = pot % showdownCount;
+                int remainderIndex = GetToActLastIndex(sbIndex);
+                for (int i = 0; i < players.Length; i++)
+                {
+                    if (!players[i].folded)
+                    {
+                        int take = chopAmt + (i == remainderIndex ? remainder : 0);
+                        Console.WriteLine(players[i].name + " wins " + take);
+                        players[i].stack += take;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine(players[winnerIndex].name + " wins pot of " + pot);
+                players[winnerIndex].stack += pot;
+            }
+
+            // Move the button for the start of the next hand
             btnIndex = GetNextPosition(btnIndex);
         }
 
@@ -431,6 +457,20 @@ namespace PioHoldem
         {
             PrintPlayers();
             Console.WriteLine("Pot:" + pot);
+        }
+
+        // Count the number of players that have not folded
+        private int CountNotFolded()
+        {
+            int playersRemaining = 0;
+            foreach (Player player in players)
+            {
+                if (!player.folded)
+                {
+                    playersRemaining++;
+                }
+            }
+            return playersRemaining;
         }
 
         // Reset the community cards

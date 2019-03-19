@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace PioHoldem
 {
-    class ShowdownEvaluator
+    class HandEvaluator
     {
-        public ShowdownEvaluator()
+        public HandEvaluator()
         {
 
         }
@@ -17,12 +17,19 @@ namespace PioHoldem
         // board and return the index of the player with the best hand
         public int EvaluateHands(Player[] players, Card[] board)
         {
-            int handRank;
-            int[] handRanks = new int[players.Length];
-            Card[] hand = new Card[7];
+            int handValue, boardLength = 0;
+            int[] handValues = new int[players.Length];
+
+            foreach (Card card in board)
+            {
+                if (card != null)
+                    boardLength++;
+            }
+
+            Card[] hand = new Card[2 + boardLength];
 
             // Populate the first five cards with the board
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < boardLength; i++)
             {
                 hand[i] = board[i];
             }
@@ -32,85 +39,35 @@ namespace PioHoldem
                 Player player = players[i];
 
                 // Populate the last two cards with the current player's hole cards
-                hand[5] = player.holeCards[0];
-                hand[6] = player.holeCards[1];
+                hand[boardLength] = player.holeCards[0];
+                hand[boardLength + 1] = player.holeCards[1];
 
-                string output = player.name + " shows |" + player.holeCards[0] + "|" + player.holeCards[1] + "| ";
+                Console.Write(player.name + " shows |" + player.holeCards[0] + "|" + player.holeCards[1] + "| ");
 
-                // Find the rank of the current player's hand
-                #region
-                if (HasStraightFlush(hand))
-                {
-                    handRank = 8;
-                    output += "*Straight Flush*";
-                }
-                else if (HasFourOfAKind(hand))
-                {
-                    handRank = 7;
-                    output += "*Four Of A Kind*";
-                }
-                else if (HasFullHouse(hand))
-                {
-                    handRank = 6;
-                    output += "*Full House*";
-                }
-                else if (HasFlush(hand))
-                {
-                    handRank = 5;
-                    output += "*Flush*";
-                }
-                else if (HasStraight(hand))
-                {
-                    handRank = 4;
-                    output += "*Straight*";
-                }
-                else if (HasThreeOfAKind(hand))
-                {
-                    handRank = 3;
-                    output += "*Three Of A Kind*";
-                }
-                else if (HasTwoPair(hand))
-                {
-                    handRank = 2;
-                    output += "*Two Pair*";
-                }
-                else if (HasPair(hand))
-                {
-                    handRank = 1;
-                    output += "*Pair*";
-                }
-                else
-                {
-                    handRank = 0;
-                    output += "*High Card*";
-                }
-                #endregion
+                // Calculate the relative value of the current player's hand
+                handValue = GetHandValue(hand);
 
-                Console.WriteLine(output);
-
-                // Write the rank to the list of hand ranks for each player
-                handRanks[i] = handRank;
+                // Write the value to the list of hand values for each player
+                handValues[i] = handValue;
             }
 
-            int highestRank = handRanks.Max();
+            int highestHandValue = handValues.Max();
             int winnerIndex = 0;
 
             int count = 0;
-            for (int i = 0; i < handRanks.Length; i++)
+            for (int i = 0; i < handValues.Length; i++)
             {
-                if (handRanks[i] == highestRank)
+                if (handValues[i] == highestHandValue)
                 {
                     count++;
                     winnerIndex = i;
                 }
             }
 
-            // If there is more than one hand of the highest rank, we need to break the tie
+            // If there is a tie, return -1 to indicate a chop pot
             if (count > 1)
             {
-                //return TieBreaker(int rank, Player[] players, Card[] board);
-                Console.WriteLine("Tie! Same hand rank! Awarding pot randomly (Tiebreaker not yet implemented)");
-                return 0;
+                return -1;
             }
             // Otherwise, return the index of the player with the highest ranking hand
             else
@@ -119,7 +76,14 @@ namespace PioHoldem
             }
         }
 
-        private bool HasStraightFlush(Card[] hand)
+        // Calculate the relative value of the given hand
+        public int GetHandValue(Card[] hand)
+        {
+            // Start by checking for the highest ranking hand
+            return HasStraightFlush(hand);
+        }
+
+        private int HasStraightFlush(Card[] hand)
         {
             foreach (Card card in hand)
             {
@@ -130,7 +94,8 @@ namespace PioHoldem
                 if (HandContains(hand, suit, value + 1) && HandContains(hand, suit, value + 2) &&
                     HandContains(hand, suit, value + 3) && HandContains(hand, suit, value + 4))
                 {
-                    return true;
+                    Console.WriteLine("*Straight Flush*");
+                    return 8000 + (value + 4);
                 }
                 // Check for A2345 of same suit
                 else if (value == 12)
@@ -138,14 +103,15 @@ namespace PioHoldem
                     if (HandContains(hand, suit, 0) && HandContains(hand, suit, 1) &&
                         HandContains(hand, suit, 2) && HandContains(hand, suit, 3))
                     {
-                        return true;
+                        Console.WriteLine("*Straight Flush*");
+                        return 8003;
                     }
                 }
             }
-            return false;
+            return HasFourOfAKind(hand);
         }
 
-        private bool HasFourOfAKind(Card[] hand)
+        private int HasFourOfAKind(Card[] hand)
         {
             foreach (Card card in hand)
             {
@@ -158,15 +124,16 @@ namespace PioHoldem
                         count++;
                         if (count == 3)
                         {
-                            return true;
+                            Console.WriteLine("*Four Of A Kind*");
+                            return 7000 + (4 * card.value) + (SumOfCardValues(hand) - (4 * card.value));
                         }
                     }
                 }
             }
-            return false;
+            return HasFullHouse(hand);
         }
 
-        private bool HasFullHouse(Card[] hand)
+        private int HasFullHouse(Card[] hand)
         {
             int value1 = -1, value2 = -1;
             foreach (Card card in hand)
@@ -198,33 +165,36 @@ namespace PioHoldem
             }
             if (value1 >= 0 && value2 >= 0)
             {
-                return true;
+                Console.WriteLine("*Full House*");
+                return 6000 + value1;
             }
-            return false;
+            return HasFlush(hand);
         }
 
-        private bool HasFlush(Card[] hand)
+        private int HasFlush(Card[] hand)
         {
             foreach (Card card in hand)
             {
-                int count = 0;
+                int count = 0, sum = card.value;
                 foreach (Card card2 in hand)
                 {
                     // Excluding the current card itself, count the cards in the hand that have the same suit
                     if (card.value != card2.value && card.suit == card2.suit)
                     {
                         count++;
+                        sum += card2.value;
                         if (count == 4)
                         {
-                            return true;
+                            Console.WriteLine("*Flush*");
+                            return 5000 + sum;
                         }
                     }
                 }
             }
-            return false;
+            return HasStraight(hand);
         }
 
-        private bool HasStraight(Card[] hand)
+        private int HasStraight(Card[] hand)
         {
             foreach (Card card in hand)
             {
@@ -234,7 +204,8 @@ namespace PioHoldem
                 if (HandContainsValueOnly(hand, value + 1) && HandContainsValueOnly(hand, value + 2) &&
                     HandContainsValueOnly(hand, value + 3) && HandContainsValueOnly(hand, value + 4))
                 {
-                    return true;
+                    Console.WriteLine("*Straight*");
+                    return 4000 + (value + 4);
                 }
                 // Check for A2345
                 else if (value == 12)
@@ -242,14 +213,15 @@ namespace PioHoldem
                     if (HandContainsValueOnly(hand, 0) && HandContainsValueOnly(hand, 1) &&
                         HandContainsValueOnly(hand, 2) && HandContainsValueOnly(hand, 3))
                     {
-                        return true;
+                        Console.WriteLine("*Straight*");
+                        return 4003;
                     }
                 }
             }
-            return false;
+            return HasThreeOfAKind(hand);
         }
 
-        private bool HasThreeOfAKind(Card[] hand)
+        private int HasThreeOfAKind(Card[] hand)
         {
             foreach (Card card in hand)
             {
@@ -262,15 +234,16 @@ namespace PioHoldem
                         count++;
                         if (count == 2)
                         {
-                            return true;
+                            Console.WriteLine("*Three Of A Kind*");
+                            return 3000 + (3 * card.value) + (SumOfCardValues(hand) - (3 * card.value));
                         }
                     }
                 }
             }
-            return false;
+            return HasTwoPair(hand);
         }
 
-        private bool HasTwoPair(Card[] hand)
+        private int HasTwoPair(Card[] hand)
         {
             int value1 = -1, value2 = -1;
             foreach (Card card in hand)
@@ -297,12 +270,13 @@ namespace PioHoldem
             }
             if (value1 >= 0 && value2 >= 0)
             {
-                return true;
+                Console.WriteLine("*Two Pair*");
+                return 2000 + (2 * value1) + (2 * value2) + (SumOfCardValues(hand) - ((2 * value1) + (2 * value2)));
             }
-            return false;
+            return HasPair(hand);
         }
 
-        private bool HasPair(Card[] hand)
+        private int HasPair(Card[] hand)
         {
             foreach (Card card in hand)
             {
@@ -311,11 +285,13 @@ namespace PioHoldem
                     // Check for 2 cards of the same value
                     if (card.suit != card2.suit && card.value == card2.value)
                     {
-                        return true;
+                        Console.WriteLine("*Pair*");
+                        return 1000 + (2 * card.value) + (SumOfCardValues(hand) - (2 * card.value));
                     }
                 }
             }
-            return false;
+            Console.WriteLine("*High Card*");
+            return SumOfCardValues(hand);
         }
 
         // Return true if the given hand contains a Card of the given suit and value
@@ -342,6 +318,17 @@ namespace PioHoldem
                 }
             }
             return false;
+        }
+
+        // Returns the sum of the values of each card in the given hand
+        private int SumOfCardValues(Card[] hand)
+        {
+            int sum = 0;
+            foreach (Card card in hand)
+            {
+                sum += card.value;
+            }
+            return sum;
         }
     }
 }

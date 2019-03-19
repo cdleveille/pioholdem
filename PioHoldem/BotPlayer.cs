@@ -10,9 +10,9 @@ namespace PioHoldem
     {
         private DecisionEngine decisionEngine;
 
-        public BotPlayer(string name, int startingStack) : base(name, startingStack)
+        public BotPlayer(string name, int startingStack, DecisionEngine decisionEngine) : base(name, startingStack)
         {
-            decisionEngine = new FishAI();
+            this.decisionEngine = decisionEngine;
         }
 
         public override int GetAction(Game game)
