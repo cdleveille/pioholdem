@@ -322,6 +322,7 @@ namespace PioHoldem
         // Deal the Flop
         private void Flop()
         {
+            Thread.Sleep(1000);
             deck.Burn();
             board[0] = deck.Deal();
             board[1] = deck.Deal();
@@ -330,31 +331,30 @@ namespace PioHoldem
             PrintBoard();
             Console.WriteLine();
             ClearInFor();
-            Thread.Sleep(1000);
         }
 
         // Deal the Turn
         private void Turn()
         {
+            Thread.Sleep(1000);
             deck.Burn();
             board[3] = deck.Deal();
             Console.Write("Turn:  ");
             PrintBoard();
             Console.WriteLine();
             ClearInFor();
-            Thread.Sleep(1000);
         }
 
         // Deal the River
         private void River()
         {
+            Thread.Sleep(1000);
             deck.Burn();
             board[4] = deck.Deal();
             Console.Write("River: ");
             PrintBoard();
             Console.WriteLine();
             ClearInFor();
-            Thread.Sleep(1000);
         }
 
         // Award to the pot to the only remaining player if all others have folded
@@ -374,6 +374,7 @@ namespace PioHoldem
         // Reveal hole cards of remaining players and award the pot to the winner
         private void Showdown()
         {
+            Thread.Sleep(1000);
             Console.WriteLine("Showdown!");
             Console.Write("Board: ");
             PrintBoard();

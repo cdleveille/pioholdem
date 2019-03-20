@@ -14,7 +14,8 @@ namespace PioHoldem
         }
 
         // Evaluate hole cards of the given players in combination with the 
-        // board and return the index of the player with the best hand
+        // board and return the index of the player with the best hand, or 
+        // return -1 if it is a tie (chop pot)
         public int EvaluateHands(Player[] players, Card[] board)
         {
             int handValue, boardLength = 0;
@@ -28,21 +29,23 @@ namespace PioHoldem
 
             Card[] hand = new Card[2 + boardLength];
 
-            // Populate the first five cards with the board
-            for (int i = 0; i < boardLength; i++)
-            {
-                hand[i] = board[i];
-            }
-
             for (int i = 0; i < players.Length; i++)
             {
                 Player player = players[i];
+
+                // Populate the first five cards with the board
+                for (int j = 0; j < boardLength; j++)
+                {
+                    hand[j] = board[j];
+                }
 
                 // Populate the last two cards with the current player's hole cards
                 hand[boardLength] = player.holeCards[0];
                 hand[boardLength + 1] = player.holeCards[1];
 
                 Console.Write(player.name + " shows |" + player.holeCards[0] + "|" + player.holeCards[1] + "| ");
+
+                hand = SortByValueDescending(hand);
 
                 // Calculate the relative value of the current player's hand
                 handValue = GetHandValue(hand);
@@ -323,12 +326,10 @@ namespace PioHoldem
         public int GetKickerValue(Card[] hand, int n)
         {
             int[] valuesToRemove = new int[hand.Length];
-            for (int i = 0; i < valuesToRemove.Length; i++)
-            {
-                valuesToRemove[i] = -1;
-            }
 
             // Find card values that appear more than once within the hand
+            // (not included in the kicker value)
+            int removedCount = 0;
             for (int i = 0; i < hand.Length; i++)
             {
                 foreach (Card card in hand)
@@ -338,6 +339,7 @@ namespace PioHoldem
                         if (!valuesToRemove.Contains(card.value))
                         {
                             valuesToRemove[i] = hand[i].value;
+                            removedCount++;
                         }
                     }
                 }
@@ -345,22 +347,22 @@ namespace PioHoldem
 
             // Set the value of the duplicate cards to -1 to
             // exclude them from consideration as a kicker
-            int removedCount = 0;
-            foreach (Card card in hand)
-            {
-                if (valuesToRemove.Contains(card.value))
-                {
-                    card.value = -1;
-                    removedCount++;
-                }
-            }
+            //int removedCount = 0;
+            //foreach (Card card in hand)
+            //{
+            //    if (valuesToRemove.Contains(card.value))
+            //    {
+            //        card.value = -1;
+            //        removedCount++;
+            //    }
+            //}
 
             // Get only the values that are not duplicates
             int[] values = new int[hand.Length - removedCount];
             int trackerIndex = 0;
             foreach (Card card in hand)
             {
-                if (card.value != -1)
+                if (!valuesToRemove.Contains(card.value))
                 {
                     values[trackerIndex] = card.value;
                     trackerIndex++;
@@ -376,6 +378,36 @@ namespace PioHoldem
             }
 
             return kickerValueSum;
+        }
+
+        public Card[] SortByValueDescending(Card[] cards)
+        {
+            Card[] sortedCards = new Card[cards.Length];
+            for (int i = 0; i < cards.Length; i++)
+            {
+                int maxValueCardIndex = GetMaxValueCardIndex(cards);
+                sortedCards[i] = new Card(cards[maxValueCardIndex].suit, cards[maxValueCardIndex].value);
+                cards[maxValueCardIndex] = null;
+            }
+            return sortedCards;
+        }
+
+        public int GetMaxValueCardIndex(Card[] cards)
+        {
+            int maxValueCardIndex = 0;
+            int maxValue = 0;
+            for (int i = 0; i < cards.Length; i++)
+            {
+                if (cards[i] != null)
+                {
+                    if (cards[i].value >= maxValue)
+                    {
+                        maxValue = cards[i].value;
+                        maxValueCardIndex = i;
+                    }
+                }
+            }
+            return maxValueCardIndex;
         }
     }
 }

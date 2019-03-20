@@ -14,6 +14,12 @@ namespace PioHoldem
             this.value = value;
         }
 
+        public Card(Card card)
+        {
+            this.suit = card.suit;
+            this.value = card.value;
+        }
+
         public override string ToString()
         {
             try
