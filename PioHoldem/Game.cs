@@ -10,6 +10,7 @@ namespace PioHoldem
     class Game
     {
         public int pot, sbAmt, bbAmt, betAmt, btnIndex, sbIndex, bbIndex, actingIndex;
+        public bool isPreflop;
         public Player[] players;
         public Card[] board;
         private Deck deck;
@@ -19,7 +20,6 @@ namespace PioHoldem
         public Game(Player[] players, int sbAmt, int bbAmt)
         {
             this.players = players;
-            deck = new Deck();
             rng = new Random();
             eval = new HandEvaluator();
             this.sbAmt = sbAmt;
@@ -42,6 +42,7 @@ namespace PioHoldem
             {
                 Console.Clear();
                 Console.WriteLine("************NEW HAND************");
+                deck = new Deck();
                 pot = 0;
                 ClearBoard();
                 Console.Write(players.Length + " players: ");
@@ -50,12 +51,13 @@ namespace PioHoldem
                 deck.Shuffle();
                 DealHoleCards();
                 PostBlinds();
-
+                isPreflop = true;
                 bool allButOneFolded = false;
                 allButOneFolded = BettingRound(GetNextPosition(bbIndex));
                 if (!allButOneFolded)
                 {
                     Flop();
+                    isPreflop = false;
                     if (!AllInSkipToShowdown())
                     {
                         allButOneFolded = BettingRound(GetNextPosition(btnIndex));
@@ -107,6 +109,7 @@ namespace PioHoldem
                 // Otherwise, continue the game
                 else
                 {
+                    Console.WriteLine();
                     Console.WriteLine("Press ENTER to begin next hand...");
                     Console.ReadLine();
                 }
@@ -161,6 +164,7 @@ namespace PioHoldem
                 Console.WriteLine(players[bbIndex].name + " posts the big blind of " + players[bbIndex].stack + " (ALL IN)");
                 players[bbIndex].stack = 0;
             }
+            Console.WriteLine();
         }
 
         // Deal two hole cards to each player
@@ -243,22 +247,20 @@ namespace PioHoldem
             // Positive value: the player put chips in the pot (call/bet/raise)
             else if (playerAction > 0)
             {
+                Console.WriteLine();
                 if (betAmt > 0 && playerAction + players[actingIndex].inFor <= betAmt)
                 {
                     string toPrint = players[actingIndex].name + " calls " + playerAction;
                     if (playerAction < betAmt)
                         toPrint += " (" + (playerAction + players[actingIndex].inFor) + " total)";
-                    Console.WriteLine();
                     Console.Write(toPrint);
                 }
                 else if (betAmt == 0)
                 {
-                    Console.WriteLine();
                     Console.Write(players[actingIndex].name + " bets " + playerAction);
                 }
                 else
                 {
-                    Console.WriteLine();
                     Console.Write(players[actingIndex].name + " raises to " + (playerAction + players[actingIndex].inFor));
                 }
                 
@@ -270,7 +272,9 @@ namespace PioHoldem
                 if (playerAction + players[actingIndex].inFor < betAmt)
                 {
                     int diff = betAmt - (playerAction + players[actingIndex].inFor);
-                    Console.WriteLine("Returning difference of " + diff + " to " + players[GetNextPosition(actingIndex)].name);
+                    Console.WriteLine(players[actingIndex].name + " is covered - returning difference of " + diff + 
+                        " to " + players[GetNextPosition(actingIndex)].name);
+                    Console.WriteLine();
                     pot -= diff;
                     players[GetNextPosition(actingIndex)].stack += diff;
                     players[GetNextPosition(actingIndex)].inFor -= diff;
@@ -297,7 +301,7 @@ namespace PioHoldem
             }
 
             // ...the player in the big blind is next to act and no player has raised
-            if (bbIndex == GetNextPosition(actingIndex) && betAmt == bbAmt)
+            if (bbIndex == GetNextPosition(actingIndex) && betAmt == bbAmt && isPreflop)
             {
                 toReturn = false;
             }
@@ -550,6 +554,7 @@ namespace PioHoldem
                 }
             }
 
+            Console.WriteLine();
             Console.WriteLine("Press ENTER to end game...");
             Console.ReadLine();
         }

@@ -20,23 +20,53 @@ namespace PioHoldem
             Game game = new Game(players, 5, 10);
             game.StartGame();
 
-            //Card c1 = new Card(0, 12);
-            //Card c2 = new Card(0, 0);
-            //Card c3 = new Card(2, 1);
-            //Card c4 = new Card(0, 2);
-            //Card c5 = new Card(0, 3);
-            //Card c6 = new Card(1, 5);
-            //Card c7 = new Card(1, 4);
+            //Card c1 = new Card(0, 0);
+            //Card c2 = new Card(1, 0);
+            //Card c3 = new Card(2, 0);
+            //Card c4 = new Card(3, 3);
+            //Card c5 = new Card(0, 5);
+            //Card c6 = new Card(1, 8);
+            //Card c7 = new Card(2, 11);
 
-            //Card[] hand = new Card[7] { c1, c2, c3, c4, c5 , c6, c7 };
+            //Card[] hand = new Card[7] { c1, c2, c3, c4, c5, c6, c7 };
             //foreach (Card card in hand)
             //{
             //    Console.Write("|" + card);
             //}
             //Console.WriteLine("|");
 
-            //ShowdownEvaluator eval = new ShowdownEvaluator();
-            //Console.WriteLine(eval.HasStraight(hand));
+            //HandEvaluator eval = new HandEvaluator();
+            //Console.WriteLine(eval.GetKickerValue(hand, 2));
+            //Console.ReadLine();
+
+
+            // Testing HandEvaluator
+            //Deck deck = new Deck();
+            //HandEvaluator eval = new HandEvaluator();
+            //deck.Shuffle();
+            //Card[] board = deck.Deal(5);
+
+            //Console.Write("Board: ");
+            //foreach (Card card in board)
+            //{
+            //    if (card != null)
+            //    {
+            //        Console.Write("|" + card);
+            //    }
+            //    else
+            //    {
+            //        Console.Write("|  ");
+            //    }
+            //}
+            //Console.WriteLine("|");
+
+            //Card[][] handList = new Card[][] { deck.Deal(2), deck.Deal(2), deck.Deal(2) };
+
+            //foreach (Card[] holeCards in handList)
+            //{
+            //    Console.Write("|" + holeCards[0] + "|" + holeCards[1] + "| ");
+            //}
+
             //Console.ReadLine();
         }
     }

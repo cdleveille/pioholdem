@@ -15,6 +15,7 @@ namespace PioHoldem
 
         public override int GetAction(Game game)
         {
+            Console.WriteLine();
             Console.WriteLine(name + "'s hole cards: |" + holeCards[0] + "|" + holeCards[1] + "|");
             int[] validActions;
             string options;
