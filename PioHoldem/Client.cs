@@ -18,7 +18,7 @@ namespace PioHoldem
 
             // Create and start a new game
             Game game = new Game(players, 5, 10);
-            game.StartGame();
+            //game.StartGame();
 
             //Card c1 = new Card(0, 0);
             //Card c2 = new Card(1, 0);
@@ -41,33 +41,31 @@ namespace PioHoldem
 
 
             // Testing HandEvaluator
-            //Deck deck = new Deck();
-            //HandEvaluator eval = new HandEvaluator();
-            //deck.Shuffle();
-            //Card[] board = deck.Deal(5);
+            Deck deck = new Deck();
+            HandEvaluator eval = new HandEvaluator();
+            deck.Shuffle();
+            Card[] board = deck.Deal(5);
 
-            //Console.Write("Board: ");
-            //foreach (Card card in board)
-            //{
-            //    if (card != null)
-            //    {
-            //        Console.Write("|" + card);
-            //    }
-            //    else
-            //    {
-            //        Console.Write("|  ");
-            //    }
-            //}
-            //Console.WriteLine("|");
+            Console.Write("Board: ");
+            foreach (Card card in board)
+            {
+                if (card != null)
+                {
+                    Console.Write("|" + card);
+                }
+                else
+                {
+                    Console.Write("|  ");
+                }
+            }
+            Console.WriteLine("|");
 
-            //Card[][] handList = new Card[][] { deck.Deal(2), deck.Deal(2), deck.Deal(2) };
+            players[0].holeCards = deck.Deal(2);
+            players[1].holeCards = deck.Deal(2);
 
-            //foreach (Card[] holeCards in handList)
-            //{
-            //    Console.Write("|" + holeCards[0] + "|" + holeCards[1] + "| ");
-            //}
+            eval.EvaluateHands(players, board);
 
-            //Console.ReadLine();
+            Console.ReadLine();
         }
     }
 }
