@@ -9,7 +9,7 @@ namespace PioHoldem
 {
     class Game
     {
-        public int pot, sbAmt, bbAmt, betAmt, btnIndex, sbIndex, bbIndex, actingIndex;
+        public int pot, sbAmt, bbAmt, betAmt, btnIndex, sbIndex, bbIndex, actingIndex, actionCount;
         public bool isPreflop;
         public Player[] players;
         public Card[] board;
@@ -35,7 +35,7 @@ namespace PioHoldem
             GameLoop();
         }
 
-        // Main game flow
+        // Main game flow logic
         private void GameLoop()
         {
             bool gameOver = false;
@@ -101,10 +101,10 @@ namespace PioHoldem
                     EndHand();
                 }
 
-                // Remove any players that busted
+                // Remove any players that busted during this hand
                 players = RemoveBustedPlayers(players);
 
-                // If there is only one player left, end the game
+                // If there is only one non-folded player left, end the game
                 if (players.Length == 1)
                 {
                     gameOver = true;
@@ -186,6 +186,7 @@ namespace PioHoldem
         private bool BettingRound(int toActFirstIndex)
         {
             bool settled = false;
+            actionCount = 0;
             actingIndex = toActFirstIndex;
             int toActLastIndex = GetToActLastIndex(toActFirstIndex);
 
@@ -202,8 +203,10 @@ namespace PioHoldem
                     int playerAction = players[actingIndex].GetAction(this);
 
                     // Based on the player's action, update applicable amounts
-                    // and determine if the action on this street is settled
+                    // and determine if the action in this betting round is settled
                     settled = ProcessPlayerAction(playerAction, toActLastIndex);
+
+                    actionCount++;
                 }
                 
                 // If all but one player have folded, end the hand
@@ -219,7 +222,7 @@ namespace PioHoldem
         }
 
         // Receive the action of the player to act and update applicable amounts
-        // Return true if action is settled on this street for all players, false if not
+        // Return true if action is settled in this betting round for all players, false if not
         private bool ProcessPlayerAction(int playerAction, int toActLastIndex)
         {
             // Negative value: the player folded
@@ -291,25 +294,25 @@ namespace PioHoldem
                 betAmt = players[actingIndex].inFor;
             }
 
-            // Close the action on this street unless...
-            bool toReturn = true;
+            // Close the betting action on this betting round unless...
+            bool isActionClosed = true;
 
-            // ...at least one player that has not folded has not matched the betAmt
+            // ...at least one non-folded player has not matched the betAmt
             foreach (Player player in players)
             {
                 if (!player.folded && player.inFor != betAmt)
                 {
-                    toReturn = false;
+                    isActionClosed = false;
                 }
             }
 
             // ...the player in the big blind is next to act and no player has raised
             if (bbIndex == GetNextPosition(actingIndex) && betAmt == bbAmt && isPreflop)
             {
-                toReturn = false;
+                isActionClosed = false;
             }
 
-            return toReturn;
+            return isActionClosed;
         }
 
         // Print a list of each player and their stack size
@@ -502,7 +505,7 @@ namespace PioHoldem
             return index - 1 == -1 ? players.Length - 1 : index - 1;
         }
 
-        // Skip to showdown if enough players are all in
+        // Skip to showdown if all but one (or all) players are all in
         private bool AllInSkipToShowdown()
         {
             int notFoldedCount = 0;

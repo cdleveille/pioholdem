@@ -42,29 +42,36 @@ namespace PioHoldem
             // Testing HandEvaluator
             //Deck deck = new Deck();
             //HandEvaluator eval = new HandEvaluator();
-            //deck.Shuffle();
-            //Card[] board = deck.Deal(5);
 
-            //Console.Write("Board: ");
-            //foreach (Card card in board)
+            //for (int i = 0; i < 50; i++)
             //{
-            //    if (card != null)
-            //    {
-            //        Console.Write("|" + card);
-            //    }
-            //    else
-            //    {
-            //        Console.Write("|  ");
-            //    }
+            //    deck.Shuffle();
+                //Card[] board = deck.Deal(5);
+
+                //Console.Write("Board: ");
+                //foreach (Card card in board)
+                //{
+                //    if (card != null)
+                //    {
+                //        Console.Write("|" + card);
+                //    }
+                //    else
+                //    {
+                //        Console.Write("|  ");
+                //    }
+                //}
+                //Console.WriteLine("|");
+
+            //    players[0].holeCards = deck.Deal(2);
+            //    players[1].holeCards = deck.Deal(2);
+
+            //    Console.WriteLine(eval.ClassifyHoleCards(players[0].holeCards));
+            //    Console.WriteLine(eval.ClassifyHoleCards(players[1].holeCards));
+
+                
             //}
-            //Console.WriteLine("|");
-
-            //players[0].holeCards = deck.Deal(2);
-            //players[1].holeCards = deck.Deal(2);
-
-            //eval.EvaluateHands(players, board);
-
             //Console.ReadLine();
+
         }
     }
 }

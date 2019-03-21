@@ -433,5 +433,28 @@ namespace PioHoldem
             }
             return maxValueCardIndex;
         }
+
+        // Return a simplified string version of the given hole cards
+        // Examples: JcTc => JTs
+        //           8s9h => 98o
+        //           KhKd => KK
+        public string ClassifyHoleCards(Card[] holeCards)
+        {
+            holeCards = SortByValueDescending(holeCards);
+            string holeCardString = holeCards[0].ToStringValueOnly() + holeCards[1].ToStringValueOnly();
+
+            if (holeCards[0].value != holeCards[1].value)
+            {
+                if (holeCards[0].suit != holeCards[1].suit)
+                {
+                    holeCardString += "o";
+                }
+                else
+                {
+                    holeCardString += "s";
+                }
+            }
+            return holeCardString;
+        }
     }
 }
