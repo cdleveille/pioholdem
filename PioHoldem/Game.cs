@@ -20,6 +20,7 @@ namespace PioHoldem
         public Game(Player[] players, int sbAmt, int bbAmt)
         {
             this.players = players;
+            deck = new Deck();
             rng = new Random();
             eval = new HandEvaluator();
             this.sbAmt = sbAmt;
@@ -42,7 +43,6 @@ namespace PioHoldem
             {
                 Console.Clear();
                 Console.WriteLine("************NEW HAND************");
-                deck = new Deck();
                 pot = 0;
                 ClearBoard();
                 Console.Write(players.Length + " players: ");
@@ -101,12 +101,15 @@ namespace PioHoldem
                     EndHand();
                 }
 
-                // Exit game loop if a player busted
-                if (PlayerBusted())
+                // Remove any players that busted
+                players = RemoveBustedPlayers(players);
+
+                // If there is only one player left, end the game
+                if (players.Length == 1)
                 {
                     gameOver = true;
                 }
-                // Otherwise, continue the game
+                // Otherwise, begin the next hand
                 else
                 {
                     Console.WriteLine();
@@ -251,7 +254,7 @@ namespace PioHoldem
                 if (betAmt > 0 && playerAction + players[actingIndex].inFor <= betAmt)
                 {
                     string toPrint = players[actingIndex].name + " calls " + playerAction;
-                    if (playerAction < betAmt)
+                    if (playerAction < betAmt && playerAction != playerAction + players[actingIndex].inFor)
                         toPrint += " (" + (playerAction + players[actingIndex].inFor) + " total)";
                     Console.Write(toPrint);
                 }
@@ -488,13 +491,13 @@ namespace PioHoldem
         }
 
         // Get the index of the next player to act
-        private int GetNextPosition(int index)
+        public int GetNextPosition(int index)
         {
             return index + 1 == players.Length ? 0 : index + 1;
         }
 
         // Get the index of the previous player to act
-        private int GetPreviousPosition(int index)
+        public int GetPreviousPosition(int index)
         {
             return index - 1 == -1 ? players.Length - 1 : index - 1;
         }
@@ -522,39 +525,38 @@ namespace PioHoldem
             return false;
         }
 
-        // Return true if a player busted during the past hand
-        private bool PlayerBusted()
+        // Return a list of players that have a chip stack > 0
+        public Player[] RemoveBustedPlayers(Player[] players)
         {
-            foreach (Player player in players)
+            int bustedCount = 0;
+            for (int i = 0; i < players.Length; i++)
             {
-                if (player.stack == 0)
+                if (players[i].stack == 0)
                 {
-
-                    return true;
+                    Console.WriteLine(players[i].name + " busted");
+                    players[i] = null;
+                    bustedCount++;
                 }
             }
-            return false;
+
+            Player[] remainingPlayers = new Player[players.Length - bustedCount];
+            int trackerIndex = 0;
+            foreach (Player player in players)
+            {
+                if (player != null)
+                {
+                    remainingPlayers[trackerIndex] = player;
+                    trackerIndex++;
+                }
+            }
+
+            return remainingPlayers;
         }
 
         // End the game and announce the winner
-        // *** ONLY WORKS FOR HEADS-UP ***
         private void GameOver()
         {
-            foreach (Player player in players)
-            {
-                if (player.stack == 0)
-                {
-                    Console.WriteLine(player.name + " busted");
-                }
-            }
-            foreach (Player player in players)
-            {
-                if (player.stack > 0)
-                {
-                    Console.WriteLine(player.name + " wins!");
-                }
-            }
-
+            Console.WriteLine(players[0].name + " wins!");
             Console.WriteLine();
             Console.WriteLine("Press ENTER to end game...");
             Console.ReadLine();

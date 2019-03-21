@@ -20,16 +20,25 @@ namespace PioHoldem
             int[] validActions;
             string options;
 
+            // No active bet
             if (game.betAmt == 0)
             {
                 options = "Fold[1] Check[2] Bet[4]";
                 validActions = new int[] { 1, 2, 4 };
             }
+            // BB option
             else if (game.betAmt == inFor)
             {
                 options = "Fold[1] Check[2] Raise[5]";
                 validActions = new int[] { 1, 2, 5 };
             }
+            // Facing an all-in bet/raise from opponent
+            else if (game.players[game.GetPreviousPosition(game.actingIndex)].stack == 0)
+            {
+                options = "Fold[1] Call[3]";
+                validActions = new int[] { 1, 3 };
+            }
+            // Facing an active bet (not all-in)
             else
             {
                 options = "Fold[1] Call[3] Raise[5]";

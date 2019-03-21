@@ -54,9 +54,11 @@ namespace PioHoldem
                 handValues[i] = handValue;
             }
 
+            // Get the value of the highest ranking hand
             int highestHandValue = handValues.Max();
             int winnerIndex = 0;
 
+            // Check if there is a tie for the highest value
             int count = 0;
             for (int i = 0; i < handValues.Length; i++)
             {
@@ -79,10 +81,33 @@ namespace PioHoldem
             }
         }
 
-        // Calculate the relative value of the given hand
+        // Calculate the relative value of the given
+        // hand using the helper methods below
         public int GetHandValue(Card[] hand)
         {
-            // Start by checking for the highest ranking hand
+            // Start by checking for the highest possible 
+            // hand rank and working down from there
+            return HasStraightFlush(hand);
+        }
+
+        private int HasRoyalFlush(Card[] hand)
+        {
+            foreach (Card card in hand)
+            {
+                int suit = card.suit;
+                int value = card.value;
+                
+                // Check for TJQKA of same suit
+                if (value == 8)
+                {
+                    if (HandContains(hand, suit, 9) && HandContains(hand, suit, 10) &&
+                        HandContains(hand, suit, 11) && HandContains(hand, suit, 12))
+                    {
+                        Console.WriteLine("*Royal Flush*");
+                        return 8012;
+                    }
+                }
+            }
             return HasStraightFlush(hand);
         }
 
@@ -128,7 +153,8 @@ namespace PioHoldem
                         if (count == 3)
                         {
                             Console.WriteLine("*Four Of A Kind*");
-                            return 7000 + GetKickerValue(hand, 1);
+                            // Give the quads card more weight than the kicker card
+                            return 7000 + (50 * card.value) + GetKickerValue(hand, 1);
                         }
                     }
                 }
@@ -237,7 +263,8 @@ namespace PioHoldem
                         if (count == 2)
                         {
                             Console.WriteLine("*Three Of A Kind*");
-                            return 3000 + GetKickerValue(hand, 2);
+                            // Give the trips card more weight than the kicker cards
+                            return 3000 + (50 * card.value) + GetKickerValue(hand, 2);
                         }
                     }
                 }
@@ -245,6 +272,12 @@ namespace PioHoldem
             return HasTwoPair(hand);
         }
 
+        // KNOWN BUG:
+        // Showdown!
+        // Board: |4h|8s|Qh|4c|8d|
+        // Salmon shows |9c|9d| *Two Pair*
+        // Trout shows |2c|Ks| *Two Pair*
+        // Trout wins pot of 40
         private int HasTwoPair(Card[] hand)
         {
             int value1 = -1, value2 = -1;
@@ -273,7 +306,8 @@ namespace PioHoldem
             if (value1 >= 0 && value2 >= 0)
             {
                 Console.WriteLine("*Two Pair*");
-                return 2000 + GetKickerValue(hand, 1);
+                // Give the two pair cards more weight than the kicker cards
+                return 2000 + (50 * value1) + (15 * value2) + GetKickerValue(hand, 1);
             }
             return HasPair(hand);
         }
@@ -288,7 +322,7 @@ namespace PioHoldem
                     if (card.suit != card2.suit && card.value == card2.value)
                     {
                         Console.WriteLine("*Pair*");
-                        return 1000 + GetKickerValue(hand, 3);
+                        return 1000 + (50 * card.value) + GetKickerValue(hand, 3);
                     }
                 }
             }
@@ -296,7 +330,7 @@ namespace PioHoldem
             return GetKickerValue(hand, 5);
         }
 
-        // Return true if the given hand contains a Card of the given suit and value
+        // Return true if the given hand contains a card of the given suit and value
         private bool HandContains(Card[] hand, int suit, int value)
         {
             foreach (Card card in hand)
@@ -309,7 +343,7 @@ namespace PioHoldem
             return false;
         }
 
-        // Return true if the given hand contains a Card of the given value
+        // Return true if the given hand contains a card of the given value
         private bool HandContainsValueOnly(Card[] hand, int value)
         {
             foreach (Card card in hand)
@@ -323,7 +357,7 @@ namespace PioHoldem
         }
 
         // Get the sum of the n kicker cards of greatest value
-        public int GetKickerValue(Card[] hand, int n)
+        private int GetKickerValue(Card[] hand, int n)
         {
             int[] valuesToRemove = new int[hand.Length];
 
@@ -344,18 +378,6 @@ namespace PioHoldem
                     }
                 }
             }
-
-            // Set the value of the duplicate cards to -1 to
-            // exclude them from consideration as a kicker
-            //int removedCount = 0;
-            //foreach (Card card in hand)
-            //{
-            //    if (valuesToRemove.Contains(card.value))
-            //    {
-            //        card.value = -1;
-            //        removedCount++;
-            //    }
-            //}
 
             // Get only the values that are not duplicates
             int[] values = new int[hand.Length - removedCount];
@@ -380,7 +402,8 @@ namespace PioHoldem
             return kickerValueSum;
         }
 
-        public Card[] SortByValueDescending(Card[] cards)
+        // Sort the given list of cards in descending order by value
+        private Card[] SortByValueDescending(Card[] cards)
         {
             Card[] sortedCards = new Card[cards.Length];
             for (int i = 0; i < cards.Length; i++)
@@ -392,7 +415,8 @@ namespace PioHoldem
             return sortedCards;
         }
 
-        public int GetMaxValueCardIndex(Card[] cards)
+        // Return the index of the card with the highest value in the given list
+        private int GetMaxValueCardIndex(Card[] cards)
         {
             int maxValueCardIndex = 0;
             int maxValue = 0;

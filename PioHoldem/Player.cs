@@ -18,7 +18,7 @@ namespace PioHoldem
         {
             this.name = name;
             stack = startingStack;
-            holeCards = new Card[2];
+            //holeCards = new Card[2];
         }
 
         // Get the Player's action
@@ -26,7 +26,7 @@ namespace PioHoldem
 
         public override string ToString()
         {
-            return name + "(" + (stack == 0 ? "*ALL IN*" : stack.ToString()) + ")";
+            return name + "[" + (stack == 0 ? "*ALL IN*" : stack.ToString()) + "]";
         }
     }
 }
