@@ -54,6 +54,7 @@ namespace PioHoldem
                 isPreflop = true;
                 bool allButOneFolded = false;
                 allButOneFolded = BettingRound(GetNextPosition(bbIndex));
+
                 if (!allButOneFolded)
                 {
                     Flop();

@@ -9,7 +9,7 @@ namespace PioHoldem
     abstract class Player
     {
         public string name;
-        public int stack, inFor;
+        public int stack, inFor, startOfHandEffectiveStack;
         public bool folded;
         public Card[] holeCards;
 
@@ -18,7 +18,6 @@ namespace PioHoldem
         {
             this.name = name;
             stack = startingStack;
-            //holeCards = new Card[2];
         }
 
         // Get the Player's action

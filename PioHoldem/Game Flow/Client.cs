@@ -6,10 +6,11 @@ namespace PioHoldem
     {
         static void Main(string[] args)
         {
-            FishAI fishAI = new FishAI();
+            FishAI fish = new FishAI();
+            SharkAI shark = new SharkAI();
 
-            Player p1 = new BotPlayer("Salmon", 1000, fishAI);
-            Player p2 = new BotPlayer("Trout", 20, fishAI);
+            Player p1 = new HumanPlayer("HumanPlayer", 1000);
+            Player p2 = new BotPlayer("SharkAI", 1000, shark);
             Player[] players = new Player[] { p1, p2 };
 
             // Create and start a new game

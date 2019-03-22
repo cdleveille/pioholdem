@@ -440,12 +440,13 @@ namespace PioHoldem
         //           KhKd => KK
         public string ClassifyHoleCards(Card[] holeCards)
         {
-            holeCards = SortByValueDescending(holeCards);
-            string holeCardString = holeCards[0].ToStringValueOnly() + holeCards[1].ToStringValueOnly();
+            Card[] sortedHoleCards = new Card[] {new Card(holeCards[0].suit, holeCards[0].value), new Card(holeCards[1].suit, holeCards[1].value) };
+            sortedHoleCards = SortByValueDescending(sortedHoleCards);
+            string holeCardString = sortedHoleCards[0].ToStringValueOnly() + sortedHoleCards[1].ToStringValueOnly();
 
-            if (holeCards[0].value != holeCards[1].value)
+            if (sortedHoleCards[0].value != sortedHoleCards[1].value)
             {
-                if (holeCards[0].suit != holeCards[1].suit)
+                if (sortedHoleCards[0].suit != sortedHoleCards[1].suit)
                 {
                     holeCardString += "o";
                 }
