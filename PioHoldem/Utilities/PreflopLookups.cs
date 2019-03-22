@@ -47,5 +47,9 @@ namespace PioHoldem
 
         public string[] BUcallShove_100 = new string[]
         {"AA", "KK", "AKo", "AKs", "QQ"};
+
+        public Dictionary<string, double> pushFold_BUshove = new Dictionary<string, double>();
+
+        public Dictionary<string, double> pushFold_BBcall = new Dictionary<string, double>();
     }
 }

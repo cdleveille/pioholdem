@@ -9,7 +9,7 @@ namespace PioHoldem
     abstract class Player
     {
         public string name;
-        public int stack, inFor, startOfHandEffectiveStack;
+        public int stack, inFor;
         public bool folded;
         public Card[] holeCards;
 

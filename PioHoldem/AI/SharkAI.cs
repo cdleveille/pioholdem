@@ -9,9 +9,9 @@ namespace PioHoldem
 {
     class SharkAI : DecisionEngine
     {
-        private readonly double pfOpenMultiplier = 2.5;
-        private readonly double pfOOPRaiseMultiplier = 3.5;
-        private readonly double pfIPRaiseMultiplier = 3.0;
+        private readonly double openMult = 2.5;
+        private readonly double oopRaiseMult = 3.5;
+        private readonly double ipRaiseMult = 3.0;
         private FishAI fishAI = new FishAI();
         PreflopLookups pf = new PreflopLookups();
 
@@ -34,7 +34,7 @@ namespace PioHoldem
                     if (pf.BUopen_100.Contains(holeCards))
                     {
                         // Open
-                        return (int)(pfOpenMultiplier * game.bbAmt) - me.inFor;
+                        return (int)(openMult * game.bbAmt) - me.inFor;
                     }
                     else
                     {
@@ -48,7 +48,7 @@ namespace PioHoldem
                     if (pf.BB3bet_100.Contains(holeCards))
                     {
                         // Raise
-                        return (int)(pfOOPRaiseMultiplier * game.bbAmt) - me.inFor;
+                        return (int)(oopRaiseMult * game.bbAmt) - me.inFor;
                     }
                     else
                     {
@@ -62,7 +62,7 @@ namespace PioHoldem
                     if (pf.BB3bet_100.Contains(holeCards))
                     {
                         // 3bet
-                        return (int)(pfOOPRaiseMultiplier * game.betAmt) - me.inFor;
+                        return (int)(oopRaiseMult * game.betAmt) - me.inFor;
                     }
                     else if (pf.BBcallOpen_100.Contains(holeCards))
                     {
@@ -81,7 +81,7 @@ namespace PioHoldem
                     if (pf.BU4bet_100.Contains(holeCards))
                     {
                         // 4bet
-                        return (int)(pfIPRaiseMultiplier * game.betAmt) - me.inFor;
+                        return (int)(ipRaiseMult * game.betAmt) - me.inFor;
                     }
                     else if (pf.BUcall3bet_100.Contains(holeCards))
                     {

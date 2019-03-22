@@ -9,7 +9,7 @@ namespace PioHoldem
 {
     class Game
     {
-        public int pot, sbAmt, bbAmt, betAmt, btnIndex, sbIndex, bbIndex, actingIndex, actionCount;
+        public int pot, sbAmt, bbAmt, betAmt, effectiveStackAmt, btnIndex, sbIndex, bbIndex, actingIndex, actionCount;
         public bool isPreflop;
         public Player[] players;
         public Card[] board;
