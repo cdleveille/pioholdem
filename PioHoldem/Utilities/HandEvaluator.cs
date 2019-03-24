@@ -278,6 +278,12 @@ namespace PioHoldem
         // Salmon shows |9c|9d| *Two Pair*
         // Trout shows |2c|Ks| *Two Pair*
         // Trout wins pot of 40
+
+        // Showdown!
+        // Board: |7s|6c|6s|5s|7c|
+        // Human shows |Qh|Kc| *Two Pair*
+        // SharkAI shows |5d|Ah| *Two Pair*
+        // Human wins pot of 400
         private int HasTwoPair(Card[] hand)
         {
             int value1 = -1, value2 = -1;

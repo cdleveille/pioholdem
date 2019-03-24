@@ -107,7 +107,7 @@ namespace PioHoldem
                 // Remove any players that busted during this hand
                 players = RemoveBustedPlayers(players);
 
-                // If there is only one non-folded player left, end the game
+                // If there is only one remaining player with a chip stack, end the game
                 if (players.Length == 1)
                 {
                     gameOver = true;
@@ -578,7 +578,7 @@ namespace PioHoldem
         {
             Console.WriteLine(players[0].name + " wins!");
             Console.WriteLine();
-            Console.WriteLine("Press ENTER to end game...");
+            Console.WriteLine("Press ENTER to start new game...");
             Console.ReadLine();
         }
     }

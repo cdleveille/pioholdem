@@ -13,7 +13,7 @@ namespace PioHoldem
         private readonly double oopRaiseMult = 3.5;
         private readonly double ipRaiseMult = 3.0;
         private FishAI fishAI = new FishAI();
-        PreflopLookups pf = new PreflopLookups();
+        private PreflopLookups pf = new PreflopLookups();
 
         public override int GetAction(Game game)
         {
@@ -42,9 +42,14 @@ namespace PioHoldem
                         // BB facing with all in bet from BU
                         return game.effectiveStack <= pf.pushFold_call[holeCards] ? ValidateBetSize(game.betAmt - me.inFor, game) : -1;
                     }
+                    else if (game.actionCount == 1 && game.betAmt == game.bbAmt)
+                    {
+                        // BB facing limp from BU
+                        return game.effectiveStack <= pf.pushFold_shove[holeCards] ? me.stack : 0;
+                    }
                     else if (game.actionCount == 1)
                     {
-                        // BB facing open raise/call from BU
+                        // BB facing open raise from BU
                         return game.effectiveStack <= pf.pushFold_shove[holeCards] ? me.stack : -1;
                     }
                     else
