@@ -62,13 +62,13 @@
   <ItemGroup>
     <Compile Include="Players\BotPlayer.cs" />
     <Compile Include="AI\FishAI.cs" />
-    <Compile Include="Game Flow\Game.cs" />
+    <Compile Include="Game\Game.cs" />
     <Compile Include="Players\HumanPlayer.cs" />
     <Compile Include="Players\Player.cs" />
-    <Compile Include="Game Objects\Card.cs" />
+    <Compile Include="Game\Card.cs" />
     <Compile Include="AI\DecisionEngine.cs" />
-    <Compile Include="Game Objects\Deck.cs" />
-    <Compile Include="Game Flow\Client.cs" />
+    <Compile Include="Game\Deck.cs" />
+    <Compile Include="Game\Client.cs" />
     <Compile Include="Utilities\PreflopLookups.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\HandEvaluator.cs" />

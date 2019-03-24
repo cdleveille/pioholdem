@@ -9,7 +9,8 @@ namespace PioHoldem
 {
     class Game
     {
-        public int pot, sbAmt, bbAmt, betAmt, effectiveStackAmt, btnIndex, sbIndex, bbIndex, actingIndex, actionCount;
+        public int pot, sbAmt, bbAmt, betAmt, btnIndex, sbIndex, bbIndex, actingIndex, actionCount;
+        public double effectiveStack;
         public bool isPreflop;
         public Player[] players;
         public Card[] board;
@@ -45,6 +46,7 @@ namespace PioHoldem
                 Console.WriteLine("************NEW HAND************");
                 pot = 0;
                 ClearBoard();
+                effectiveStack = CalculateEffectiveStack();
                 Console.Write(players.Length + " players: ");
                 PrintPlayers();
                 Console.WriteLine(players[btnIndex].name + " is on the button");
@@ -504,6 +506,20 @@ namespace PioHoldem
         public int GetPreviousPosition(int index)
         {
             return index - 1 == -1 ? players.Length - 1 : index - 1;
+        }
+
+        // Divide the shortest stack by the BB amount
+        private double CalculateEffectiveStack()
+        {
+            int shortestStack = players[0].stack;
+            foreach (Player player in players)
+            {
+                if (player.stack < shortestStack)
+                {
+                    shortestStack = player.stack;
+                }
+            }
+            return (double)shortestStack / bbAmt;
         }
 
         // Skip to showdown if all but one (or all) players are all in

@@ -9,8 +9,8 @@ namespace PioHoldem
             FishAI fish = new FishAI();
             SharkAI shark = new SharkAI();
 
-            Player p1 = new HumanPlayer("HumanPlayer", 1000);
-            Player p2 = new BotPlayer("SharkAI", 1000, shark);
+            Player p1 = new HumanPlayer("Human", 200);
+            Player p2 = new BotPlayer("SharkAI", 200, shark);
             Player[] players = new Player[] { p1, p2 };
 
             // Create and start a new game
