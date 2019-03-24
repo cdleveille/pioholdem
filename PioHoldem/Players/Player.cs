@@ -9,8 +9,9 @@ namespace PioHoldem
     abstract class Player
     {
         public string name;
-        public int stack, inFor;
+        public int stack, startingStack, inFor, winCount;
         public bool folded;
+        public bool busted;
         public Card[] holeCards;
 
         // Create a new Player with the specified name and starting stack amount
@@ -18,6 +19,8 @@ namespace PioHoldem
         {
             this.name = name;
             stack = startingStack;
+            this.startingStack = startingStack;
+            winCount = 0;
         }
 
         // Get the Player's action

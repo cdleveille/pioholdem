@@ -9,19 +9,16 @@ namespace PioHoldem
             FishAI fish = new FishAI();
             SharkAI shark = new SharkAI();
 
+            Player p1 = new BotPlayer("Human", 200, fish);
+            Player p2 = new BotPlayer("SharkAI", 200, shark);
+            Player[] players = new Player[] { p1, p2 };
+
             // Create and start a new game
             while (true)
             {
-                Player p1 = new HumanPlayer("Human", 200);
-                Player p2 = new BotPlayer("SharkAI", 200, shark);
-                Player[] players = new Player[] { p1, p2 };
-
-                Game game = new Game(players, 5, 10);
+                Game game = new Game(players, 5, 10, 0);
                 game.StartGame();
             }
-            
-            //players = game.RemoveBustedPlayers(players);
-            //Console.ReadLine();
 
             //Card c1 = new Card(0, 5);
             //Card c2 = new Card(1, 0);

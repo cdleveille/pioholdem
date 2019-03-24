@@ -11,7 +11,7 @@ namespace PioHoldem
     {
         public override int GetAction(Game game)
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(game.sleepTime);
 
             int action;
             if (game.betAmt == 0)

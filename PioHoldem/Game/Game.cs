@@ -9,7 +9,7 @@ namespace PioHoldem
 {
     class Game
     {
-        public int pot, sbAmt, bbAmt, betAmt, btnIndex, sbIndex, bbIndex, actingIndex, actionCount;
+        public int pot, sbAmt, bbAmt, betAmt, btnIndex, sbIndex, bbIndex, actingIndex, actionCount, sleepTime;
         public double effectiveStack;
         public bool isPreflop;
         public Player[] players;
@@ -18,7 +18,7 @@ namespace PioHoldem
         private Random rng;
         private HandEvaluator eval;
 
-        public Game(Player[] players, int sbAmt, int bbAmt)
+        public Game(Player[] players, int sbAmt, int bbAmt, int sleepTime)
         {
             this.players = players;
             deck = new Deck();
@@ -26,12 +26,26 @@ namespace PioHoldem
             eval = new HandEvaluator();
             this.sbAmt = sbAmt;
             this.bbAmt = bbAmt;
+            this.sleepTime = sleepTime;
             board = new Card[5];
         }
 
         // Start a new game
         public void StartGame()
         {
+            Console.Clear();
+            Console.WriteLine("Games won:");
+            foreach (Player player in players)
+            {
+                player.busted = false;
+                player.stack = player.startingStack;
+                Console.Write(player.name + ":" + player.winCount + " ");
+                if (player.winCount == 100)
+                {
+                    Console.ReadLine();
+                }
+            }
+            Console.WriteLine();
             btnIndex = rng.Next(players.Length);
             GameLoop();
         }
@@ -40,9 +54,13 @@ namespace PioHoldem
         private void GameLoop()
         {
             bool gameOver = false;
+            int handCount = 1;
             while (!gameOver)
             {
-                Console.Clear();
+                if (handCount > 1)
+                {
+                    Console.Clear();
+                }
                 Console.WriteLine("************NEW HAND************");
                 pot = 0;
                 ClearBoard();
@@ -55,8 +73,10 @@ namespace PioHoldem
                 PostBlinds();
                 isPreflop = true;
                 bool allButOneFolded = false;
-                allButOneFolded = BettingRound(GetNextPosition(bbIndex));
-
+                if (!AllInSkipToShowdown())
+                {
+                    allButOneFolded = BettingRound(GetNextPosition(btnIndex));
+                }
                 if (!allButOneFolded)
                 {
                     Flop();
@@ -104,20 +124,21 @@ namespace PioHoldem
                     EndHand();
                 }
 
-                // Remove any players that busted during this hand
-                players = RemoveBustedPlayers(players);
+                // Report any players that busted during this hand
+                ReportBustedPlayers(players);
 
                 // If there is only one remaining player with a chip stack, end the game
-                if (players.Length == 1)
+                if (CountRemainingPlayers() == 1)
                 {
                     gameOver = true;
                 }
                 // Otherwise, begin the next hand
                 else
                 {
+                    handCount++;
                     Console.WriteLine();
                     Console.WriteLine("Press ENTER to begin next hand...");
-                    Console.ReadLine();
+                    //Console.ReadLine();
                 }
             }
             GameOver();
@@ -150,7 +171,7 @@ namespace PioHoldem
             {
                 pot += players[sbIndex].stack;
                 players[sbIndex].inFor += players[sbIndex].stack;
-                Console.WriteLine(players[sbIndex].name + " posts the small blind of " + players[sbIndex].stack + " (ALL IN)");
+                Console.WriteLine(players[sbIndex].name + " posts the small blind of " + players[sbIndex].stack + " *ALL IN*");
                 players[sbIndex].stack = 0;
             }
 
@@ -167,7 +188,7 @@ namespace PioHoldem
                 pot += players[bbIndex].stack;
                 players[bbIndex].inFor += players[bbIndex].stack;
                 betAmt = players[bbIndex].stack;
-                Console.WriteLine(players[bbIndex].name + " posts the big blind of " + players[bbIndex].stack + " (ALL IN)");
+                Console.WriteLine(players[bbIndex].name + " posts the big blind of " + players[bbIndex].stack + " *ALL IN*");
                 players[bbIndex].stack = 0;
             }
             Console.WriteLine();
@@ -331,7 +352,7 @@ namespace PioHoldem
         // Deal the Flop
         private void Flop()
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(sleepTime);
             deck.Burn();
             board[0] = deck.Deal();
             board[1] = deck.Deal();
@@ -345,7 +366,7 @@ namespace PioHoldem
         // Deal the Turn
         private void Turn()
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(sleepTime);
             deck.Burn();
             board[3] = deck.Deal();
             Console.Write("Turn:  ");
@@ -357,7 +378,7 @@ namespace PioHoldem
         // Deal the River
         private void River()
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(sleepTime);
             deck.Burn();
             board[4] = deck.Deal();
             Console.Write("River: ");
@@ -383,7 +404,7 @@ namespace PioHoldem
         // Reveal hole cards of remaining players and award the pot to the winner
         private void Showdown()
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(sleepTime);
             Console.WriteLine("Showdown!");
             Console.Write("Board: ");
             PrintBoard();
@@ -545,41 +566,50 @@ namespace PioHoldem
             return false;
         }
 
-        // Return a list of players that have a chip stack > 0
-        public Player[] RemoveBustedPlayers(Player[] players)
+        // Report any players that busted during this hand
+        public void ReportBustedPlayers(Player[] players)
         {
-            int bustedCount = 0;
             for (int i = 0; i < players.Length; i++)
             {
-                if (players[i].stack == 0)
+                if (players[i].stack == 0 && !players[i].busted)
                 {
                     Console.WriteLine(players[i].name + " busted");
-                    players[i] = null;
-                    bustedCount++;
+                    players[i].busted = true;
                 }
             }
+        }
 
-            Player[] remainingPlayers = new Player[players.Length - bustedCount];
-            int trackerIndex = 0;
+        // Count the players that have not busted
+        private int CountRemainingPlayers()
+        {
+            int count = 0;
             foreach (Player player in players)
             {
-                if (player != null)
+                if (!player.busted)
                 {
-                    remainingPlayers[trackerIndex] = player;
-                    trackerIndex++;
+                    count++;
                 }
             }
-
-            return remainingPlayers;
+            return count;
         }
 
         // End the game and announce the winner
         private void GameOver()
         {
-            Console.WriteLine(players[0].name + " wins!");
+            string winner = "";
+            foreach (Player player in players)
+            {
+                if (!player.busted)
+                {
+                    winner = player.name;
+                    player.winCount++;
+                }
+            }
+
+            Console.WriteLine(winner + " wins!");
             Console.WriteLine();
             Console.WriteLine("Press ENTER to start new game...");
-            Console.ReadLine();
+           // Console.ReadLine();
         }
     }
 }

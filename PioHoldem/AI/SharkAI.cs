@@ -17,7 +17,7 @@ namespace PioHoldem
 
         public override int GetAction(Game game)
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(game.sleepTime);
 
             Player me = game.players[game.actingIndex];
             Player opp = game.players[game.GetNextPosition(game.actingIndex)];
