@@ -72,7 +72,7 @@ namespace PioHoldem
             // If there is a tie, return -1 to indicate a chop pot
             if (count > 1)
             {
-                return -1;
+                return TieBreaker(players, board, highestHandValue);
             }
             // Otherwise, return the index of the player with the highest ranking hand
             else
@@ -195,7 +195,8 @@ namespace PioHoldem
             if (value1 >= 0 && value2 >= 0)
             {
                 Console.WriteLine("*Full House*");
-                return 6000 + value1 + value2;
+                // Give the trips card more weight than the paired card
+                return 6000 + (50 * value1) + value2;
             }
             return HasFlush(hand);
         }
@@ -214,7 +215,7 @@ namespace PioHoldem
                         if (count == 4)
                         {
                             Console.WriteLine("*Flush*");
-                            return 5000 + GetKickerValue(hand, 5);
+                            return 5000;
                         }
                     }
                 }
@@ -264,7 +265,7 @@ namespace PioHoldem
                         {
                             Console.WriteLine("*Three Of A Kind*");
                             // Give the trips card more weight than the kicker cards
-                            return 3000 + (50 * card.value) + GetKickerValue(hand, 2);
+                            return 3000;
                         }
                     }
                 }
@@ -272,18 +273,7 @@ namespace PioHoldem
             return HasTwoPair(hand);
         }
 
-        // KNOWN BUG:
-        // Showdown!
-        // Board: |4h|8s|Qh|4c|8d|
-        // Salmon shows |9c|9d| *Two Pair*
-        // Trout shows |2c|Ks| *Two Pair*
-        // Trout wins pot of 40
 
-        // Showdown!
-        // Board: |7s|6c|6s|5s|7c|
-        // Human shows |Qh|Kc| *Two Pair*
-        // SharkAI shows |5d|Ah| *Two Pair*
-        // Human wins pot of 400
         private int HasTwoPair(Card[] hand)
         {
             int value1 = -1, value2 = -1;
@@ -312,8 +302,7 @@ namespace PioHoldem
             if (value1 >= 0 && value2 >= 0)
             {
                 Console.WriteLine("*Two Pair*");
-                // Give the two pair cards more weight than the kicker cards
-                return 2000 + (50 * value1) + (15 * value2) + GetKickerValue(hand, 1);
+                return 2000;
             }
             return HasPair(hand);
         }
@@ -328,12 +317,12 @@ namespace PioHoldem
                     if (card.suit != card2.suit && card.value == card2.value)
                     {
                         Console.WriteLine("*Pair*");
-                        return 1000 + (50 * card.value) + GetKickerValue(hand, 3);
+                        return 1000;
                     }
                 }
             }
             Console.WriteLine("*High Card*");
-            return GetKickerValue(hand, 5);
+            return 0;
         }
 
         // Return true if the given hand contains a card of the given suit and value
@@ -462,6 +451,35 @@ namespace PioHoldem
                 }
             }
             return holeCardString;
+        }
+
+        private int TieBreaker(Player[] players, Card[] board, int highestHandValue)
+        {
+            // High Card
+            if (highestHandValue == 0)
+            {
+
+            }
+            // Pair
+            else if (highestHandValue == 1000)
+            {
+
+            }
+            // Two Pair
+            else if (highestHandValue == 2000)
+            {
+
+            }
+            // Three Of A Kind
+            else if (highestHandValue == 3000)
+            {
+
+            }
+            // Flush
+            else if (highestHandValue == 5000)
+            {
+
+            }
         }
     }
 }

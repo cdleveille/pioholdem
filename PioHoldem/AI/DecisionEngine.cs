@@ -8,8 +8,8 @@ namespace PioHoldem
 {
     abstract class DecisionEngine
     {
-        public static Random rng;
-        public static HandEvaluator eval;
+        protected static Random rng;
+        protected static HandEvaluator eval;
 
         public DecisionEngine()
         {
