@@ -33,19 +33,11 @@ namespace PioHoldem
         // Start a new game
         public void StartGame()
         {
-            Console.Clear();
-            Console.WriteLine("Games won:");
             foreach (Player player in players)
             {
                 player.busted = false;
                 player.stack = player.startingStack;
-                Console.Write(player.name + ":" + player.winCount + " ");
-                if (player.winCount == 100)
-                {
-                    Console.ReadLine();
-                }
             }
-            Console.WriteLine();
             btnIndex = rng.Next(players.Length);
             GameLoop();
         }
@@ -57,10 +49,8 @@ namespace PioHoldem
             int handCount = 1;
             while (!gameOver)
             {
-                if (handCount > 1)
-                {
-                    Console.Clear();
-                }
+                Console.Clear();
+                PrintScore();
                 Console.WriteLine("************NEW HAND************");
                 pot = 0;
                 ClearBoard();
@@ -75,7 +65,7 @@ namespace PioHoldem
                 bool allButOneFolded = false;
                 if (!AllInSkipToShowdown())
                 {
-                    allButOneFolded = BettingRound(GetNextPosition(btnIndex));
+                    allButOneFolded = BettingRound(GetNextPosition(bbIndex));
                 }
                 if (!allButOneFolded)
                 {
@@ -138,7 +128,7 @@ namespace PioHoldem
                     handCount++;
                     Console.WriteLine();
                     Console.WriteLine("Press ENTER to begin next hand...");
-                    //Console.ReadLine();
+                    Console.ReadLine();
                 }
             }
             GameOver();
@@ -488,6 +478,16 @@ namespace PioHoldem
             Console.WriteLine("|");
         }
 
+        // Show the number of games that each player has won
+        private void PrintScore()
+        {
+            foreach (Player player in players)
+            {
+                Console.Write(player.name + ":" + player.winCount + " ");
+            }
+            Console.WriteLine();
+        }
+
         private void PrintStacksAndPot()
         {
             PrintPlayers();
@@ -609,7 +609,7 @@ namespace PioHoldem
             Console.WriteLine(winner + " wins!");
             Console.WriteLine();
             Console.WriteLine("Press ENTER to start new game...");
-           // Console.ReadLine();
+            Console.ReadLine();
         }
     }
 }
