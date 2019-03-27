@@ -317,7 +317,7 @@ namespace PioHoldem
                     if (card.suit != card2.suit && card.value == card2.value)
                     {
                         Console.WriteLine("*Pair*");
-                        return 1000;
+                        return 1000 + GetKickerValue(hand, 3);
                     }
                 }
             }
@@ -354,7 +354,7 @@ namespace PioHoldem
         // Get the sum of the n kicker cards of greatest value
         private int GetKickerValue(Card[] hand, int n)
         {
-            int[] valuesToRemove = new int[hand.Length];
+            int[] pairedValues = new int[hand.Length];
 
             // Find card values that appear more than once within the hand
             // (not included in the kicker value)
@@ -365,9 +365,9 @@ namespace PioHoldem
                 {
                     if (hand[i].suit != card.suit && hand[i].value == card.value)
                     {
-                        if (!valuesToRemove.Contains(card.value))
+                        if (!pairedValues.Contains(card.value) && removedCount < 2)
                         {
-                            valuesToRemove[i] = hand[i].value;
+                            pairedValues[i] = hand[i].value;
                             removedCount++;
                         }
                     }
@@ -379,7 +379,7 @@ namespace PioHoldem
             int trackerIndex = 0;
             foreach (Card card in hand)
             {
-                if (!valuesToRemove.Contains(card.value))
+                if (!pairedValues.Contains(card.value))
                 {
                     values[trackerIndex] = card.value;
                     trackerIndex++;
@@ -388,10 +388,22 @@ namespace PioHoldem
 
             // Sort the values and return the sum of the n greatest values
             int[] sortedValues = values.OrderBy(v => v).ToList().ToArray();
-            int kickerValueSum = 0;
+            int kickerValueSum = 0, weight;
             for (int i = sortedValues.Length - 1; i >= sortedValues.Length - n; i--)
             {
-                kickerValueSum += sortedValues[i];
+                if (i == sortedValues.Length - 1)
+                {
+                    weight = 15;
+                }
+                else if (i == sortedValues.Length - 2)
+                {
+                    weight = 5;
+                }
+                else
+                {
+                    weight = 1;
+                }
+                kickerValueSum += weight * sortedValues[i];
             }
 
             return kickerValueSum;
@@ -480,6 +492,8 @@ namespace PioHoldem
             {
 
             }
+
+            return highestHandValue;
         }
     }
 }

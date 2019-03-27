@@ -60,19 +60,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Players\BotPlayer.cs" />
-    <Compile Include="AI\FishAI.cs" />
-    <Compile Include="Game\Game.cs" />
-    <Compile Include="Players\HumanPlayer.cs" />
-    <Compile Include="Players\Player.cs" />
-    <Compile Include="Game\Card.cs" />
-    <Compile Include="AI\DecisionEngine.cs" />
-    <Compile Include="Game\Deck.cs" />
-    <Compile Include="Game\Client.cs" />
-    <Compile Include="Utilities\PreflopLookups.cs" />
+    <Compile Include="Source\Players\BotPlayer.cs" />
+    <Compile Include="Source\AI\FishAI.cs" />
+    <Compile Include="Source\Game\Game.cs" />
+    <Compile Include="Source\Players\HumanPlayer.cs" />
+    <Compile Include="Source\Players\Player.cs" />
+    <Compile Include="Source\Game\Card.cs" />
+    <Compile Include="Source\AI\DecisionEngine.cs" />
+    <Compile Include="Source\Game\Deck.cs" />
+    <Compile Include="Source\Game\Client.cs" />
+    <Compile Include="Source\Utilities\PreflopLookups.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\HandEvaluator.cs" />
-    <Compile Include="AI\SharkAI.cs" />
+    <Compile Include="Source\Utilities\HandEvaluator.cs" />
+    <Compile Include="Source\AI\SharkAI.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

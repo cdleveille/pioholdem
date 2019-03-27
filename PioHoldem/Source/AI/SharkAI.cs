@@ -29,7 +29,7 @@ namespace PioHoldem
 
             if (game.isPreflop)
             {
-                // Use push/fold strategy for under 20BB
+                // Use push/fold strategy for effective stack of 20BB or shorter
                 if (game.effectiveStack <= 20.0)
                 {
                     if (game.actionCount == 0)

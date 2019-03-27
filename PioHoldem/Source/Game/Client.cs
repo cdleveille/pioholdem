@@ -34,11 +34,20 @@ namespace PioHoldem
             Card c4 = new Card(2, 4);
             Card c5 = new Card(1, 4);
 
-            Card c6 = new Card(2, 9);
-            Card c7 = new Card(2, 6);
+            Card c6 = new Card(2, 11);
+            Card c7 = new Card(2, 0);
+
+            Card c8 = new Card(1, 10);
+            Card c9 = new Card(0, 9);
 
             Card[] hand = new Card[7] { c1, c2, c3, c4, c5, c6, c7 };
+            Card[] hand2 = new Card[7] { c1, c2, c3, c4, c5, c8, c9 };
             foreach (Card card in hand)
+            {
+                Console.Write("|" + card);
+            }
+            Console.WriteLine("|");
+            foreach (Card card in hand2)
             {
                 Console.Write("|" + card);
             }
@@ -46,6 +55,7 @@ namespace PioHoldem
 
             HandEvaluator eval = new HandEvaluator();
             Console.WriteLine(eval.GetHandValue(hand));
+            Console.WriteLine(eval.GetHandValue(hand2));
             Console.ReadLine();
 
 
