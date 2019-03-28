@@ -45,8 +45,6 @@ namespace PioHoldem
 
                 Console.Write(player.name + " shows |" + player.holeCards[0] + "|" + player.holeCards[1] + "| ");
 
-                hand = SortByValueDescending(hand);
-
                 // Calculate the relative value of the current player's hand
                 handValue = GetHandValue(hand);
 
@@ -72,7 +70,7 @@ namespace PioHoldem
             // If there is a tie, return -1 to indicate a chop pot
             if (count > 1)
             {
-                return TieBreaker(players, board, highestHandValue);
+                return -1;
             }
             // Otherwise, return the index of the player with the highest ranking hand
             else
@@ -81,10 +79,11 @@ namespace PioHoldem
             }
         }
 
-        // Calculate the relative value of the given
-        // hand using the helper methods below
+        // Calculate the relative value of the given hand using the helper methods below
         public int GetHandValue(Card[] hand)
         {
+            hand = SortByValueDescending(hand);
+
             // Start by checking for the highest possible 
             // hand rank and working down from there
             return HasStraightFlush(hand);
@@ -104,7 +103,7 @@ namespace PioHoldem
                         HandContains(hand, suit, 11) && HandContains(hand, suit, 12))
                     {
                         Console.WriteLine("*Royal Flush*");
-                        return 8012;
+                        return 800000012;
                     }
                 }
             }
@@ -123,7 +122,7 @@ namespace PioHoldem
                     HandContains(hand, suit, value + 3) && HandContains(hand, suit, value + 4))
                 {
                     Console.WriteLine("*Straight Flush*");
-                    return 8000 + (value + 4);
+                    return 800000000 + (value + 4);
                 }
                 // Check for A2345 of same suit
                 else if (value == 12)
@@ -132,7 +131,7 @@ namespace PioHoldem
                         HandContains(hand, suit, 2) && HandContains(hand, suit, 3))
                     {
                         Console.WriteLine("*Straight Flush*");
-                        return 8003;
+                        return 800000003;
                     }
                 }
             }
@@ -154,7 +153,7 @@ namespace PioHoldem
                         {
                             Console.WriteLine("*Four Of A Kind*");
                             // Give the quads card more weight than the kicker card
-                            return 7000 + (50 * card.value) + GetKickerValue(hand, 1);
+                            return 700000000 + (500000 * card.value) + GetKickerValue(hand, 1);
                         }
                     }
                 }
@@ -177,7 +176,13 @@ namespace PioHoldem
                         if (count == 2)
                         {
                             value1 = card.value;
+                            break;
                         }
+                    }
+                    // If a pair is found, do not continue searching
+                    if (value1 >= 0)
+                    {
+                        break;
                     }
                 }
             }
@@ -189,14 +194,20 @@ namespace PioHoldem
                     if (card.suit != card2.suit && card.value == card2.value && card.value != value1)
                     {
                         value2 = card.value;
+                        break;
                     }
+                }
+                // If a pair is found, do not continue searching
+                if (value2 >= 0)
+                {
+                    break;
                 }
             }
             if (value1 >= 0 && value2 >= 0)
             {
                 Console.WriteLine("*Full House*");
                 // Give the trips card more weight than the paired card
-                return 6000 + (50 * value1) + value2;
+                return 600000000 + (500 * value1) + value2;
             }
             return HasFlush(hand);
         }
@@ -215,7 +226,7 @@ namespace PioHoldem
                         if (count == 4)
                         {
                             Console.WriteLine("*Flush*");
-                            return 5000;
+                            return 500000000 + GetKickerValue(hand, 5);
                         }
                     }
                 }
@@ -234,7 +245,7 @@ namespace PioHoldem
                     HandContainsValueOnly(hand, value + 3) && HandContainsValueOnly(hand, value + 4))
                 {
                     Console.WriteLine("*Straight*");
-                    return 4000 + (value + 4);
+                    return 400000000 + (value + 4);
                 }
                 // Check for A2345
                 else if (value == 12)
@@ -243,7 +254,7 @@ namespace PioHoldem
                         HandContainsValueOnly(hand, 2) && HandContainsValueOnly(hand, 3))
                     {
                         Console.WriteLine("*Straight*");
-                        return 4003;
+                        return 400000003;
                     }
                 }
             }
@@ -265,7 +276,7 @@ namespace PioHoldem
                         {
                             Console.WriteLine("*Three Of A Kind*");
                             // Give the trips card more weight than the kicker cards
-                            return 3000;
+                            return 300000000;
                         }
                     }
                 }
@@ -285,7 +296,13 @@ namespace PioHoldem
                     if (card.suit != card2.suit && card.value == card2.value)
                     {
                         value1 = card.value;
+                        break;
                     }
+                }
+                // If a pair is found, do not continue searching
+                if (value1 >= 0)
+                {
+                    break;
                 }
             }
             foreach (Card card in hand)
@@ -296,13 +313,19 @@ namespace PioHoldem
                     if (card.suit != card2.suit && card.value == card2.value && card.value != value1)
                     {
                         value2 = card.value;
+                        break;
                     }
+                }
+                // If a pair is found, do not continue searching
+                if (value2 >= 0)
+                {
+                    break;
                 }
             }
             if (value1 >= 0 && value2 >= 0)
             {
                 Console.WriteLine("*Two Pair*");
-                return 2000;
+                return 200000000 + (7000000 * value1) + (500000 * value2) + GetKickerValue(hand, 1);
             }
             return HasPair(hand);
         }
@@ -317,12 +340,12 @@ namespace PioHoldem
                     if (card.suit != card2.suit && card.value == card2.value)
                     {
                         Console.WriteLine("*Pair*");
-                        return 1000 + GetKickerValue(hand, 3);
+                        return 100000000 + (500000 * card.value) + GetKickerValue(hand, 3);
                     }
                 }
             }
             Console.WriteLine("*High Card*");
-            return 0;
+            return GetKickerValue(hand, 5);
         }
 
         // Return true if the given hand contains a card of the given suit and value
@@ -351,13 +374,12 @@ namespace PioHoldem
             return false;
         }
 
-        // Get the sum of the n kicker cards of greatest value
+        // Get the weighted sum of the n kicker cards of greatest value
         private int GetKickerValue(Card[] hand, int n)
         {
-            int[] pairedValues = new int[hand.Length];
-
             // Find card values that appear more than once within the hand
-            // (not included in the kicker value)
+            // (not included in the kicker value). Only remove 2 maximum.
+            int[] pairedValues = new int[hand.Length];
             int removedCount = 0;
             for (int i = 0; i < hand.Length; i++)
             {
@@ -381,23 +403,33 @@ namespace PioHoldem
             {
                 if (!pairedValues.Contains(card.value))
                 {
-                    values[trackerIndex] = card.value;
+                    // Add 1 to the value so that 2s are not value of 0
+                    values[trackerIndex] = card.value + 1;
                     trackerIndex++;
                 }
             }
 
-            // Sort the values and return the sum of the n greatest values
+            // Sort the values and return the weighted sum of the n greatest values
             int[] sortedValues = values.OrderBy(v => v).ToList().ToArray();
             int kickerValueSum = 0, weight;
             for (int i = sortedValues.Length - 1; i >= sortedValues.Length - n; i--)
             {
+                // Give the kicker card of greatest value the most weight
                 if (i == sortedValues.Length - 1)
                 {
-                    weight = 15;
+                    weight = 36000;
                 }
                 else if (i == sortedValues.Length - 2)
                 {
-                    weight = 5;
+                    weight = 2700;
+                }
+                else if (i == sortedValues.Length - 3)
+                {
+                    weight = 200;
+                }
+                else if ((i == sortedValues.Length - 4))
+                {
+                    weight = 15;
                 }
                 else
                 {
@@ -463,37 +495,6 @@ namespace PioHoldem
                 }
             }
             return holeCardString;
-        }
-
-        private int TieBreaker(Player[] players, Card[] board, int highestHandValue)
-        {
-            // High Card
-            if (highestHandValue == 0)
-            {
-
-            }
-            // Pair
-            else if (highestHandValue == 1000)
-            {
-
-            }
-            // Two Pair
-            else if (highestHandValue == 2000)
-            {
-
-            }
-            // Three Of A Kind
-            else if (highestHandValue == 3000)
-            {
-
-            }
-            // Flush
-            else if (highestHandValue == 5000)
-            {
-
-            }
-
-            return highestHandValue;
         }
     }
 }

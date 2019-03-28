@@ -271,7 +271,7 @@ namespace PioHoldem
                 if (betAmt > 0 && playerAction + players[actingIndex].inFor <= betAmt)
                 {
                     string toPrint = players[actingIndex].name + " calls " + playerAction;
-                    if (playerAction < betAmt && playerAction != playerAction + players[actingIndex].inFor)
+                    if (playerAction < betAmt && players[actingIndex].inFor > 0)
                         toPrint += " (" + (playerAction + players[actingIndex].inFor) + " total)";
                     Console.Write(toPrint);
                 }
@@ -292,7 +292,7 @@ namespace PioHoldem
                 if (playerAction + players[actingIndex].inFor < betAmt)
                 {
                     int diff = betAmt - (playerAction + players[actingIndex].inFor);
-                    Console.WriteLine(players[actingIndex].name + " is covered - returning difference of " + diff + 
+                    Console.WriteLine(players[actingIndex].name + " is covered - returning " + diff + 
                         " to " + players[GetNextPosition(actingIndex)].name);
                     Console.WriteLine();
                     pot -= diff;
@@ -342,39 +342,42 @@ namespace PioHoldem
         // Deal the Flop
         private void Flop()
         {
-            Thread.Sleep(sleepTime);
+            ClearInFor();
             deck.Burn();
             board[0] = deck.Deal();
             board[1] = deck.Deal();
             board[2] = deck.Deal();
+
+            Thread.Sleep(sleepTime);
             Console.Write("Flop:  ");
             PrintBoard();
             Console.WriteLine();
-            ClearInFor();
         }
 
         // Deal the Turn
         private void Turn()
         {
-            Thread.Sleep(sleepTime);
+            ClearInFor();
             deck.Burn();
             board[3] = deck.Deal();
+
+            Thread.Sleep(sleepTime);
             Console.Write("Turn:  ");
             PrintBoard();
             Console.WriteLine();
-            ClearInFor();
         }
 
         // Deal the River
         private void River()
         {
-            Thread.Sleep(sleepTime);
+            ClearInFor();
             deck.Burn();
             board[4] = deck.Deal();
+
+            Thread.Sleep(sleepTime);
             Console.Write("River: ");
             PrintBoard();
             Console.WriteLine();
-            ClearInFor();
         }
 
         // Award to the pot to the only remaining player if all others have folded
@@ -384,7 +387,7 @@ namespace PioHoldem
             {
                 if (players[i].folded == false)
                 {
-                    Console.WriteLine(players[i].name + " wins pot of " + pot);
+                    Console.WriteLine(players[i].name + " wins pot of " + (pot - players[i].inFor));
                     players[i].stack += pot;
                 }
             }
