@@ -9,25 +9,21 @@ namespace PioHoldem
             FishAI fish = new FishAI();
             SharkAI shark = new SharkAI();
 
-            Player human1 = new HumanPlayer("Human1", 200);
-            Player human2 = new HumanPlayer("Human2", 200);
-            Player bot1 = new BotPlayer("Shark1", 200, shark);
-            Player bot2 = new BotPlayer("Shark2", 200, shark);
-
+            int startingStack = 200;
             Player[] players;
 
             int gameMode = SelectGameMode();
             if (gameMode == 1)
             {
-                players = new Player[] { human1, bot1 };
+                players = new Player[] { new HumanPlayer("Ralph", startingStack), new BotPlayer("SharkAI", startingStack, shark) };
             }
             else if (gameMode == 2)
             {
-                players = new Player[] { bot1, bot2 };
+                players = new Player[] { new BotPlayer("GreatWhite", startingStack, shark), new BotPlayer("Hammerhead", startingStack, shark) };
             }
             else
             {
-                players = new Player[] { human1, human2 };
+                players = new Player[] { new HumanPlayer("Ralph", startingStack), new HumanPlayer("Willie", startingStack) };
             }
 
             // Create and start a new game
