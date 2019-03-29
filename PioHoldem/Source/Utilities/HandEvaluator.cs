@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PioHoldem
 {
     class HandEvaluator
     {
-        public HandEvaluator()
-        {
-
-        }
-
         // Evaluate hole cards of the given players in combination with the 
         // board and return the index of the player with the best hand, or 
         // return -1 if it is a tie (chop pot)
@@ -86,7 +78,7 @@ namespace PioHoldem
 
             // Start by checking for the highest possible 
             // hand rank and working down from there
-            return HasStraightFlush(hand);
+            return HasRoyalFlush(hand);
         }
 
         private int HasRoyalFlush(Card[] hand)

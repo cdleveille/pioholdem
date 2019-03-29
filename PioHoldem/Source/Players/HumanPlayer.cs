@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PioHoldem
 {
@@ -78,7 +75,7 @@ namespace PioHoldem
                     }
                     else if (input == 4)
                     {
-                        int amtInput = GetAmtInput(game.betAmt, game.bbAmt, "Bet amount:");
+                        int amtInput = GetAmtInput(game.betAmt, game.prevBetAmount, game.bbAmt, "Bet amount:");
                         if (amtInput >= stack)
                         {
                             return stack;
@@ -90,7 +87,7 @@ namespace PioHoldem
                     }
                     else if (input == 5)
                     {
-                        int amtInput = GetAmtInput(game.betAmt, game.bbAmt, "Raise to amount:");
+                        int amtInput = GetAmtInput(game.betAmt, game.prevBetAmount, game.bbAmt, "Raise to amount:");
                         if (amtInput - inFor >= stack)
                         {
                             return stack;
@@ -117,21 +114,21 @@ namespace PioHoldem
             }
         }
 
-        private int GetAmtInput(int betAmt, int minBet, string prompt)
+        private int GetAmtInput(int betAmt, int prevBetAmt, int minBet, string prompt)
         {
             try
             {
                 Console.WriteLine(prompt);
                 int amtInput = int.Parse(Console.ReadLine());
-                if (betAmt > 0 && amtInput < (2 * betAmt))
+                if (betAmt > 0 && amtInput < betAmt + (betAmt - prevBetAmt))
                 {
-                    Console.WriteLine("Invalid raise! Minimum amount is " + (2 * betAmt));
-                    return GetAmtInput(betAmt, minBet, prompt);
+                    Console.WriteLine("Invalid raise! Minimum amount is " + (betAmt + (betAmt - prevBetAmt)));
+                    return GetAmtInput(betAmt, prevBetAmt, minBet, prompt);
                 }
                 else if (betAmt == 0 && amtInput < minBet)
                 {
                     Console.WriteLine("Invalid bet! Minimum amount is " + minBet);
-                    return GetAmtInput(betAmt, minBet, prompt);
+                    return GetAmtInput(betAmt, prevBetAmt, minBet, prompt);
                 }
                 else
                 {
@@ -148,7 +145,7 @@ namespace PioHoldem
                 else
                 {
                     Console.WriteLine("Invalid input!");
-                    return GetAmtInput(betAmt, minBet, prompt);
+                    return GetAmtInput(betAmt, prevBetAmt, minBet, prompt);
                 }
             }
         }

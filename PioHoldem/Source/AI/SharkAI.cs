@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace PioHoldem
 {
@@ -27,7 +23,8 @@ namespace PioHoldem
 
             string holeCards = eval.ClassifyHoleCards(me.holeCards);
 
-            if (game.isPreflop)
+            // Preflop
+            if (game.street == 0)
             {
                 // Use push/fold strategy for effective stack of 20BB or shorter
                 if (game.effectiveStack <= 20.0)
@@ -139,13 +136,13 @@ namespace PioHoldem
                             return -1;
                         }
                     }
-                    // BU facing BU 5bet
-                    else if (game.actionCount == 4)
+                    // BU facing BU 5bet (and so on...)
+                    else if (game.actionCount >= 4)
                     {
                         if (pf.BUcallShove_100.Contains(holeCards))
                         {
-                            // Call
-                            return game.betAmt - me.inFor;
+                            // Call/Shove
+                            return me.stack - me.inFor;
                         }
                         else
                         {

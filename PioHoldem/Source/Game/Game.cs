@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace PioHoldem
 {
     class Game
     {
-        public int pot, sbAmt, bbAmt, betAmt, btnIndex, sbIndex, bbIndex, actingIndex, actionCount, sleepTime;
+        public int pot, sbAmt, bbAmt, betAmt, prevBetAmount, btnIndex, 
+            sbIndex, bbIndex, actingIndex, street, actionCount, sleepTime;
         public double effectiveStack;
-        public bool isPreflop;
         public Player[] players;
         public Card[] board;
         private Deck deck;
@@ -54,6 +50,7 @@ namespace PioHoldem
                 Console.WriteLine("************NEW HAND************");
                 pot = 0;
                 ClearBoard();
+                ClearInFor();
                 effectiveStack = CalculateEffectiveStack();
                 Console.Write(players.Length + " players: ");
                 PrintPlayers();
@@ -61,7 +58,7 @@ namespace PioHoldem
                 deck.Shuffle();
                 DealHoleCards();
                 PostBlinds();
-                isPreflop = true;
+                street = 0;
                 bool allButOneFolded = false;
                 if (!AllInSkipToShowdown())
                 {
@@ -70,7 +67,7 @@ namespace PioHoldem
                 if (!allButOneFolded)
                 {
                     Flop();
-                    isPreflop = false;
+                    street = 1;
                     if (!AllInSkipToShowdown())
                     {
                         allButOneFolded = BettingRound(GetNextPosition(btnIndex));
@@ -78,6 +75,7 @@ namespace PioHoldem
                     if (!allButOneFolded)
                     {
                         Turn();
+                        street = 2;
                         if (!AllInSkipToShowdown())
                         {
                             allButOneFolded = BettingRound(GetNextPosition(btnIndex));
@@ -85,6 +83,7 @@ namespace PioHoldem
                         if (!allButOneFolded)
                         {
                             River();
+                            street = 3;
                             if (!AllInSkipToShowdown())
                             {
                                 allButOneFolded = BettingRound(GetNextPosition(btnIndex));
@@ -137,7 +136,6 @@ namespace PioHoldem
         // Collect the blinds
         private void PostBlinds()
         {
-
             // If we are heads-up, the button posts the small blind
             if (players.Length == 2)
             {
@@ -191,12 +189,12 @@ namespace PioHoldem
             {
                 player.holeCards = deck.Deal(2);
                 player.folded = false;
-                player.inFor = 0;
             }
         }
 
-        // Get an action from each player in order until all players 
-        // have either folded or committed the required amount of chips
+        // Get an action from each player in order until all players have either folded or 
+        // committed the required amount of chips. Return true if all but one player have 
+        // folded, or false if the hand should continue.
         private bool BettingRound(int toActFirstIndex)
         {
             bool settled = false;
@@ -211,7 +209,15 @@ namespace PioHoldem
                 {
                     // Print player stacks and other relevant amounts
                     PrintPlayers();
-                    Console.WriteLine("Pot:" + pot + " Bet:" + betAmt + " InFor:" + players[actingIndex].inFor + " ToCall:" + (betAmt - players[actingIndex].inFor));
+                    Console.Write("Pot:" + pot + " Bet:" + betAmt + " InFor:" + players[actingIndex].inFor + " ToCall:");
+                    if (betAmt - players[actingIndex].inFor >= players[actingIndex].stack)
+                    {
+                        Console.WriteLine("ALL-IN");
+                    }
+                    else
+                    {
+                        Console.WriteLine(betAmt - players[actingIndex].inFor);
+                    }
 
                     // Get an action from the acting player
                     int playerAction = players[actingIndex].GetAction(this);
@@ -235,7 +241,7 @@ namespace PioHoldem
             return false;
         }
 
-        // Receive the action of the player to act and update applicable amounts
+        // Handle the action of the acting player and update applicable amounts.
         // Return true if action is settled in this betting round for all players, false if not
         private bool ProcessPlayerAction(int playerAction, int toActLastIndex)
         {
@@ -305,6 +311,7 @@ namespace PioHoldem
                 pot += playerAction;
                 players[actingIndex].stack -= playerAction;
                 players[actingIndex].inFor += playerAction;
+                prevBetAmount = betAmt;
                 betAmt = players[actingIndex].inFor;
             }
 
@@ -321,7 +328,7 @@ namespace PioHoldem
             }
 
             // ...the player in the big blind is next to act and no player has raised
-            if (bbIndex == GetNextPosition(actingIndex) && betAmt == bbAmt && isPreflop)
+            if (bbIndex == GetNextPosition(actingIndex) && betAmt == bbAmt && street == 0)
             {
                 isActionClosed = false;
             }
@@ -445,6 +452,7 @@ namespace PioHoldem
         private void ClearInFor()
         {
             betAmt = 0;
+            prevBetAmount = 0;
             foreach (Player player in players)
             {
                 player.inFor = 0;
@@ -570,7 +578,7 @@ namespace PioHoldem
         }
 
         // Report any players that busted during this hand
-        public void ReportBustedPlayers(Player[] players)
+        private void ReportBustedPlayers(Player[] players)
         {
             for (int i = 0; i < players.Length; i++)
             {

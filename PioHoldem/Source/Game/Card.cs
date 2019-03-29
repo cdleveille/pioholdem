@@ -14,12 +14,7 @@ namespace PioHoldem
             this.value = value;
         }
 
-        public Card(Card card)
-        {
-            this.suit = card.suit;
-            this.value = card.value;
-        }
-
+        // Print the card's value and suit
         public override string ToString()
         {
             try
@@ -70,6 +65,7 @@ namespace PioHoldem
             }
         }
 
+        // Print the card's value
         public string ToStringValueOnly()
         {
             try
