@@ -8,6 +8,7 @@ namespace PioHoldem
         private readonly double openMult = 2.5;
         private readonly double oopRaiseMult = 3.5;
         private readonly double ipRaiseMult = 3.0;
+        private readonly double betPct = 0.6;
         private FishAI fishAI = new FishAI();
         private PreflopLookups pf = new PreflopLookups();
 
@@ -31,12 +32,18 @@ namespace PioHoldem
                 {
                     if (game.actionCount == 0)
                     {
+                        // BU first to act, BB all in after posting blinds
+                        if (opp.stack == 0)
+                        {
+                            return game.effectiveStack <= pf.pushFold_call[holeCards] ? game.sbAmt : -1;
+                        }
+
                         // BU first to act
                         return game.effectiveStack <= pf.pushFold_shove[holeCards] ? me.stack : -1;
                     }
                     else if (game.actionCount == 1 && opp.stack == 0)
                     {
-                        // BB facing with all in bet from BU
+                        // BB facing all in bet from BU
                         return game.effectiveStack <= pf.pushFold_call[holeCards] ? ValidateBetSize(game.betAmt - me.inFor, game) : -1;
                     }
                     else if (game.actionCount == 1 && game.betAmt == game.bbAmt)
@@ -155,7 +162,62 @@ namespace PioHoldem
                     }
                 }
             }
-            // Use FishAI strategy for postflop
+            // Flop
+            else if (game.street == 1)
+            {
+                // OOP first to act
+                if (game.actionCount == 0)
+                {
+                    // We are the aggressor: continue on 90% of flops
+                    if (me.isAggressor)
+                    {
+                        return rng.Next(10) < 9 ? ValidateBetSize((int)(game.pot * betPct), game) : 0;
+                    }
+                    // Opponent is the aggressor: check the flop
+                    else if (opp.isAggressor)
+                    {
+                        return 0;
+                    }
+                    // Neither player is the aggressor: bet 33% of flops
+                    else
+                    {
+                        return rng.Next(3) < 1 ? ValidateBetSize((int)(game.pot * betPct), game) : 0;
+                    }
+                }
+                // IP second to act
+                else if (game.actionCount == 1)
+                {
+                    // OOP player checked flop
+                    if (game.betAmt == 0)
+                    {
+                        // We are the aggressor: continue on 90% of flops
+                        if (me.isAggressor)
+                        {
+                            return rng.Next(10) < 9 ? ValidateBetSize((int)(game.pot * betPct), game) : 0;
+                        }
+                        // Opponent is the aggressor: check back the flop
+                        else if (opp.isAggressor)
+                        {
+                            return 0;
+                        }
+                        // Neither player is the aggressor: bet 50% of flops
+                        else
+                        {
+                            return rng.Next(2) < 1 ? ValidateBetSize((int)(game.pot * betPct), game) : 0;
+                        }
+                    }
+                    // OOP player bet flop
+                    else
+                    {
+                        return fishAI.GetAction(game);
+                    }
+                }
+                else
+                {
+                    return fishAI.GetAction(game);
+                }
+            }
+            // Use FishAI strategy
             else
             {
                 return fishAI.GetAction(game);

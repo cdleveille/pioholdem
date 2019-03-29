@@ -9,7 +9,7 @@ namespace PioHoldem
             FishAI fish = new FishAI();
             SharkAI shark = new SharkAI();
 
-            int startingStack = 10;
+            int startingStack = 200;
             Player[] players;
 
             Console.WriteLine("[1] Human vs Bot\n[2] Bot vs Bot\n[3] Human vs Human");
@@ -27,7 +27,7 @@ namespace PioHoldem
                 players = new Player[] { new HumanPlayer("Chris", startingStack), new HumanPlayer("Aaron", startingStack) };
             }
 
-            //Tests();
+            //UnitTests();
 
             // Create and start a new game
             while (true)
@@ -37,6 +37,7 @@ namespace PioHoldem
             }
         }
 
+        // Get the user's input and return an int indicating the desired game mode
         private static int SelectGameMode()
         {
             try
@@ -58,7 +59,7 @@ namespace PioHoldem
             }
         }
 
-        private static void Tests()
+        private static void UnitTests()
         {
             Card c1 = new Card(3, 12);
             Card c2 = new Card(2, 12);

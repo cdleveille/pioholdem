@@ -5,10 +5,7 @@ namespace PioHoldem
 {
     class HumanPlayer : Player
     {
-        public HumanPlayer(string name, int startingStack) : base(name, startingStack)
-        {
-
-        }
+        public HumanPlayer(string name, int startingStack) : base(name, startingStack){}
 
         public override int GetAction(Game game)
         {
@@ -20,14 +17,14 @@ namespace PioHoldem
             // No active bet
             if (game.betAmt == 0)
             {
-                options = "Fold[1] Check[2] Bet[4]";
-                validActions = new int[] { 1, 2, 4 };
+                options = "Check[2] Bet[4]";
+                validActions = new int[] { 2, 4 };
             }
             // BB option
             else if (game.betAmt == inFor)
             {
-                options = "Fold[1] Check[2] Raise[5]";
-                validActions = new int[] { 1, 2, 5 };
+                options = "Check[2] Raise[5]";
+                validActions = new int[] { 2, 5 };
             }
             // Facing an all-in bet/raise from opponent
             else if (game.players[game.GetPreviousPosition(game.actingIndex)].stack == 0)

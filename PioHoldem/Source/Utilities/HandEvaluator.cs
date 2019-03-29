@@ -171,7 +171,7 @@ namespace PioHoldem
                             break;
                         }
                     }
-                    // If a pair is found, do not continue searching
+                    // If 3 cards of the same value are found, do not continue searching
                     if (value1 >= 0)
                     {
                         break;

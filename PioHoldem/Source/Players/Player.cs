@@ -4,21 +4,20 @@ namespace PioHoldem
     abstract class Player
     {
         public string name;
-        public int stack, startingStack, inFor, winCount;
-        public bool folded;
-        public bool busted;
+        public int stack, buyinAmt, inFor, winCount;
+        public bool folded, busted, isAggressor;
         public Card[] holeCards;
 
-        // Create a new Player with the specified name and starting stack amount
-        public Player(string name, int startingStack)
+        // Create a new player with the specified name and starting stack amount
+        public Player(string name, int buyinAmt)
         {
             this.name = name;
-            stack = startingStack;
-            this.startingStack = startingStack;
+            this.buyinAmt = buyinAmt;
+            holeCards = new Card[2];
             winCount = 0;
         }
 
-        // Get the Player's action
+        // Get the player's action
         public abstract int GetAction(Game game);
 
         public override string ToString()
