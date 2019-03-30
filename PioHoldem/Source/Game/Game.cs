@@ -13,6 +13,7 @@ namespace PioHoldem
         private Deck deck;
         private Random rng;
         private HandEvaluator eval;
+        private bool alreadyPrintedStacksAndPot;
 
         // Create a new game with the specified players, stakes, and delay time between actions
         public Game(Player[] players, int sbAmt, int bbAmt, int sleepTime)
@@ -48,7 +49,6 @@ namespace PioHoldem
             while (!gameOver)
             {
                 Preflop();
-
                 allButOneFolded = BettingRound(GetNextPosition(bbIndex));
                 if (!allButOneFolded)
                 {
@@ -125,6 +125,7 @@ namespace PioHoldem
 
             ClearBoard();
             ClearBetAmts();
+            alreadyPrintedStacksAndPot = false;
             effectiveStack = CalculateEffectiveStack();
 
             PostBlinds();
@@ -243,6 +244,16 @@ namespace PioHoldem
                 // Get the next player to act
                 actingIndex = GetNextPosition(actingIndex);
             }
+
+            // Print the p
+            if (AllInSkipToShowdown() && !alreadyPrintedStacksAndPot)
+            {
+                Thread.Sleep(sleepTime);
+                PrintPlayers();
+                Console.WriteLine("Pot:" + pot + "\n");
+                alreadyPrintedStacksAndPot = true;
+            }
+
             return false;
         }
 
@@ -268,7 +279,7 @@ namespace PioHoldem
                 players[actingIndex].isAggressor = false;
 
                 // Close the action if the big blind checks and there has been no aggressive action
-                if (actingIndex == bbIndex && (betAmt == bbAmt || betAmt == 0))
+                if (actingIndex == bbIndex && betAmt == bbAmt && street == 0)
                 {
                     return true;
                 }

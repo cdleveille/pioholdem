@@ -198,8 +198,7 @@ namespace PioHoldem
             if (value1 >= 0 && value2 >= 0)
             {
                 Console.WriteLine("*Full House*");
-                // Give the trips card more weight than the paired card
-                return 600000000 + (500 * value1) + value2;
+                return 600000000 + (500000 * value1) + value2;
             }
             return HasFlush(hand);
         }
@@ -267,8 +266,7 @@ namespace PioHoldem
                         if (count == 2)
                         {
                             Console.WriteLine("*Three Of A Kind*");
-                            // Give the trips card more weight than the kicker cards
-                            return 300000000;
+                            return 300000000 + (500000 * card.value) + GetKickerValue(hand, 2);
                         }
                     }
                 }
