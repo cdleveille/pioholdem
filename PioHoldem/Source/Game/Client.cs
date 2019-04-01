@@ -44,13 +44,9 @@ namespace PioHoldem
             {
                 int input = int.Parse(Console.ReadLine());
                 if (input >= 1 && input <= 3)
-                {
                     return input;
-                }
                 else
-                {
                     throw new Exception();
-                }
             }
             catch (Exception)
             {
@@ -61,26 +57,24 @@ namespace PioHoldem
 
         private static void UnitTests()
         {
-            Card c1 = new Card(3, 12);
-            Card c2 = new Card(2, 12);
+            Card c1 = new Card(3, 1);
+            Card c2 = new Card(2, 1);
             Card c3 = new Card(1, 1);
-            Card c4 = new Card(2, 2);
-            Card c5 = new Card(1, 4);
+            Card c4 = new Card(2, 12);
+            Card c5 = new Card(1, 0);
+            //Card c6 = new Card(1, 10);
+            //Card c7 = new Card(2, 5);
 
-            Card c6 = new Card(1, 9);
-            Card c7 = new Card(2, 9);
+            Card c8 = new Card(3, 1);
+            Card c9 = new Card(2, 1);
+            Card c10 = new Card(1, 1);
+            Card c11 = new Card(2, 11);
+            Card c12 = new Card(1, 10);
+            //Card c13 = new Card(1, 4);
+            //Card c14 = new Card(2, 6);
 
-            Card c8 = new Card(3, 10);
-            Card c9 = new Card(2, 10);
-            Card c10 = new Card(1, 3);
-            Card c11 = new Card(2, 2);
-            Card c12 = new Card(1, 0);
-
-            Card c13 = new Card(1, 11);
-            Card c14 = new Card(2, 11);
-
-            Card[] hand = new Card[7] { c1, c2, c3, c4, c5, c6, c7 };
-            Card[] hand2 = new Card[7] { c8, c9, c10, c11, c12, c13, c14 };
+            Card[] hand = new Card[5] { c1, c2, c3, c4, c5 };
+            Card[] hand2 = new Card[5] { c8, c9, c10, c11, c12 };
             foreach (Card card in hand)
             {
                 Console.Write("|" + card);
