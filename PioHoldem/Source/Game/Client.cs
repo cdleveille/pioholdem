@@ -15,17 +15,11 @@ namespace PioHoldem
             Console.WriteLine("[1] Human vs Bot\n[2] Bot vs Bot\n[3] Human vs Human");
             int gameMode = SelectGameMode();
             if (gameMode == 1)
-            {
                 players = new Player[] { new HumanPlayer("Chris", startingStack), new BotPlayer("SharkBot", startingStack, shark) };
-            }
             else if (gameMode == 2)
-            {
                 players = new Player[] { new BotPlayer("GreatWhite", startingStack, shark), new BotPlayer("Hammerhead", startingStack, shark) };
-            }
             else
-            {
                 players = new Player[] { new HumanPlayer("Chris", startingStack), new HumanPlayer("Aaron", startingStack) };
-            }
 
             //UnitTests();
 
@@ -76,14 +70,10 @@ namespace PioHoldem
             Card[] hand = new Card[5] { c1, c2, c3, c4, c5 };
             Card[] hand2 = new Card[5] { c8, c9, c10, c11, c12 };
             foreach (Card card in hand)
-            {
                 Console.Write("|" + card);
-            }
             Console.WriteLine("|");
             foreach (Card card in hand2)
-            {
                 Console.Write("|" + card);
-            }
             Console.WriteLine("|");
 
             HandEvaluator eval = new HandEvaluator();

@@ -15,9 +15,7 @@ namespace PioHoldem
             for (int suit = 0; suit < 4; suit++)
             {
                 for (int value = 0; value < 13; value++)
-                {
                     cards[13 * suit + value] = new Card(suit, value);
-                }
             }
             topIndex = 0;
             rng = new Random();
@@ -52,9 +50,7 @@ namespace PioHoldem
         {
             Card[] toReturn = new Card[count];
             for (int i = 0; i < count; i++)
-            {
                 toReturn[i] = Deal();
-            }
             return toReturn;
         }
 
@@ -68,9 +64,7 @@ namespace PioHoldem
         {
             string toReturn = "";
             foreach (Card card in cards)
-            {
                 toReturn += "|" + card;
-            }
             return toReturn + "|";
         }
     }

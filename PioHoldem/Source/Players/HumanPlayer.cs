@@ -52,57 +52,37 @@ namespace PioHoldem
                 if (validActions.Contains(input))
                 {
                     if (input == 1)
-                    {
                         return -1;
-                    }
                     else if (input == 2)
-                    {
                         return 0;
-                    }
                     else if (input == 3)
                     {
                         if (game.betAmt - inFor >= stack)
-                        {
                             return stack;
-                        }
                         else
-                        {
                             return game.betAmt - inFor;
-                        }
                     }
                     else if (input == 4)
                     {
                         int amtInput = GetAmtInput(game.betAmt, game.prevBetAmount, game.bbAmt, "Bet amount:");
                         if (amtInput >= stack)
-                        {
                             return stack;
-                        }
                         else
-                        {
                             return amtInput;
-                        }
                     }
                     else if (input == 5)
                     {
                         int amtInput = GetAmtInput(game.betAmt, game.prevBetAmount, game.bbAmt, "Raise to amount:");
                         if (amtInput - inFor >= stack)
-                        {
                             return stack;
-                        }
                         else
-                        {
                             return amtInput - inFor;
-                        }
                     }
                     else
-                    {
                         throw new Exception();
-                    }
                 }
                 else
-                {
                     throw new Exception();
-                }
             }
             catch (Exception)
             {
@@ -128,17 +108,13 @@ namespace PioHoldem
                     return GetAmtInput(betAmt, prevBetAmt, minBet, prompt);
                 }
                 else
-                {
                     return amtInput;
-                }
 
             }
             catch (Exception ex)
             {
                 if (ex.Message == "Value was either too large or too small for an Int32.")
-                {
                     return 2 * stack;
-                }
                 else
                 {
                     Console.WriteLine("Invalid input!");
